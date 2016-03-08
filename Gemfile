@@ -13,6 +13,11 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'pg'
 group :development, :test do
   gem 'byebug'
+  gem "rspec-rails"
+  gem "factory_girl_rails"
+  gem "guard"
+  gem "guard-rspec"
+  gem 'guard-cucumber'
 end
 
 group :development do
@@ -20,3 +25,15 @@ group :development do
 	gem 'spring'
 end
 
+
+group :test do
+  gem "faker"
+  gem "capybara"
+  gem "database_cleaner"
+  gem "launchy"
+  gem "email_spec"
+  gem "cucumber-rails", :require => false
+  gem 'simplecov', :require => false
+  gem 'rb-fsevent', :require => false
+  gem 'growl'
+end
