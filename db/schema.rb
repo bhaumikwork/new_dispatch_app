@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(version: 20160309062532) do
     t.datetime "updated_at",                          null: false
   end
 
+  add_index "dispatchers", ["confirmation_token"], name: "index_dispatchers_on_confirmation_token", unique: true, using: :btree
   add_index "dispatchers", ["email"], name: "index_dispatchers_on_email", unique: true, using: :btree
   add_index "dispatchers", ["reset_password_token"], name: "index_dispatchers_on_reset_password_token", unique: true, using: :btree
 

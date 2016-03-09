@@ -38,7 +38,7 @@ class DeviseCreateDispatchers < ActiveRecord::Migration
 
     add_index :dispatchers, :email,                unique: true
     add_index :dispatchers, :reset_password_token, unique: true
-    # add_index :dispatchers, :confirmation_token,   unique: true
+    add_index :dispatchers, :confirmation_token,   unique: true
     # add_index :dispatchers, :unlock_token,         unique: true
   end
 end
