@@ -11,6 +11,7 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'pg'
+gem 'devise'
 group :development, :test do
   gem 'byebug'
   gem "rspec-rails"
@@ -23,6 +24,7 @@ end
 group :development do
   gem 'web-console', '~> 2.0'
 	gem 'spring'
+  gem "letter_opener"
 end
 
 
