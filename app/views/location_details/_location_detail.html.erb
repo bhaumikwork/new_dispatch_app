@@ -13,7 +13,7 @@
               <span class="mandatory">*</span>
             </div>
             <div class="col-md-4">
-              <%= text_field_tag :street_number,nil,required: true,class: "required" %>
+              <%= number_field_tag :street_number,nil,required: true,class: "required",min: 0 %>
             </div>
           </div>
         </div>
