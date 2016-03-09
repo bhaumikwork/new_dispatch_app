@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160309062532) do
+ActiveRecord::Schema.define(version: 20160309102113) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,4 +40,19 @@ ActiveRecord::Schema.define(version: 20160309062532) do
   add_index "dispatchers", ["email"], name: "index_dispatchers_on_email", unique: true, using: :btree
   add_index "dispatchers", ["reset_password_token"], name: "index_dispatchers_on_reset_password_token", unique: true, using: :btree
 
+  create_table "location_details", force: :cascade do |t|
+    t.string   "dest_lat"
+    t.string   "dest_long"
+    t.string   "source_lat"
+    t.string   "source_long"
+    t.integer  "eta"
+    t.string   "url_token"
+    t.integer  "dispatcher_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "location_details", ["dispatcher_id"], name: "index_location_details_on_dispatcher_id", using: :btree
+
+  add_foreign_key "location_details", "dispatchers"
 end

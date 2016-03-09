@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Dest lat:</strong>
+  <%= @location_detail.dest_lat %>
+</p>
+
+<p>
+  <strong>Dest long:</strong>
+  <%= @location_detail.dest_long %>
+</p>
+
+<p>
+  <strong>Source lat:</strong>
+  <%= @location_detail.source_lat %>
+</p>
+
+<p>
+  <strong>Source long:</strong>
+  <%= @location_detail.source_long %>
+</p>
+
+<p>
+  <strong>Eta:</strong>
+  <%= @location_detail.eta %>
+</p>
+
+<p>
+  <strong>Url token:</strong>
+  <%= @location_detail.url_token %>
+</p>
+
+<p>
+  <strong>Dispatcher:</strong>
+  <%= @location_detail.dispatcher %>
+</p>
+
+<%= link_to 'Edit', edit_location_detail_path(@location_detail) %> |
+<%= link_to 'Back', location_details_path %>

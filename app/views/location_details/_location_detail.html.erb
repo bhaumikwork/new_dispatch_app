@@ -1,0 +1,64 @@
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <h4 class="modal-title">Location Details</h4>
+    </div>
+    <%= form_tag location_detail_resolve_path, id: 'location_detail' do |f| %>
+      <div class="modal-body">
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-4 text-right">
+              <%= label_tag :street_number %>
+              <span class="mandatory">*</span>
+            </div>
+            <div class="col-md-4">
+              <%= text_field_tag :street_number,nil,required: true,class: "required" %>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-4 text-right">
+              <%= label_tag :street_address %>
+              <span class="mandatory">*</span>
+            </div>
+            <div class="col-md-4">
+              <%= text_field_tag :street_address %>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-4 text-right">
+              <%= label_tag :city %>
+              <span class="mandatory">*</span>
+            </div>
+            <div class="col-md-4">
+              <%= text_field_tag :city %>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-4 text-right">
+              <%= label_tag :state %>
+              <span class="mandatory">*</span>
+            </div>
+            <div class="col-md-4">
+              <%= select_tag :state,"<option>Washigton</option><option>Montana</option><option>Alaska</option><option>California</option>".html_safe %>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <%= submit_tag "Save" ,:class=>"btn btn-primary"%>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    <% end %>
+  </div>
+</div>
