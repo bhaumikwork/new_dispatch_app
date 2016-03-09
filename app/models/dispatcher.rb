@@ -4,6 +4,8 @@ class Dispatcher < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
+  has_many :location_details,dependent: :destroy
+
   def name
     first_name.present? ? first_name : last_name.present? ? last_name : email
   end

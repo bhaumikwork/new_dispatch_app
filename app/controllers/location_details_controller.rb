@@ -65,6 +65,13 @@ class LocationDetailsController < ApplicationController
     respond_to :js
   end
   def location_detail
+    query = params[:street_number] + ',' + params[:street_address] + ',' + params[:city] + ',' + params[:state]
+    logger.info"<=====#{query}========>"
+    Geocoder::Configuration.timeout = 30000
+    @current_location = Geocoder.search(query).first
+    logger.info"<=sabbb====#{@current_location.data}======>"
+    logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
+    exit
     
   end
 

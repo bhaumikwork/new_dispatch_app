@@ -49,7 +49,7 @@
               <span class="mandatory">*</span>
             </div>
             <div class="col-md-4">
-            <% sample_options = [['Washigton', '1'], ['Montana', '2'], ['Alaska', '3']] %>
+            <% sample_options = [['Washigton', 'Washigton'], ['Montana', '2'], ['Alaska', '3'],['New York','New York']] %>
               <%= select_tag :state,options_for_select([['Select...', '']] + sample_options),required: true %>
             </div>
           </div>
