@@ -25,7 +25,7 @@
               <span class="mandatory">*</span>
             </div>
             <div class="col-md-4">
-              <%= text_field_tag :street_address %>
+              <%= text_field_tag :street_address,nil,required: true %>
             </div>
           </div>
         </div>
@@ -37,7 +37,7 @@
               <span class="mandatory">*</span>
             </div>
             <div class="col-md-4">
-              <%= text_field_tag :city %>
+              <%= text_field_tag :city,nil,required: true %>
             </div>
           </div>
         </div>
@@ -49,7 +49,8 @@
               <span class="mandatory">*</span>
             </div>
             <div class="col-md-4">
-              <%= select_tag :state,"<option>Washigton</option><option>Montana</option><option>Alaska</option><option>California</option>".html_safe %>
+            <% sample_options = [['Washigton', '1'], ['Montana', '2'], ['Alaska', '3']] %>
+              <%= select_tag :state,options_for_select([['Select...', '']] + sample_options),required: true %>
             </div>
           </div>
         </div>
