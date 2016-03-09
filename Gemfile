@@ -39,3 +39,7 @@ group :test do
   gem 'rb-fsevent', :require => false
   gem 'growl'
 end
+
+group :production do
+  gem 'rails_12factor'
+end
