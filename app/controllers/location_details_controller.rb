@@ -62,6 +62,11 @@ class LocationDetailsController < ApplicationController
   end
 
   def location_detail_popup
+    logger.info"<===location==#{request.location.ip}========>"
+    Geocoder::Configuration.timeout = 30000
+    @current_location = Geocoder.search(request.location.ip).first
+    logger.info"<=curr====#{@current_location.data}======>"
+    logger.info"<=curr====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
     respond_to :js
   end
   def location_detail
@@ -71,7 +76,6 @@ class LocationDetailsController < ApplicationController
     @current_location = Geocoder.search(query).first
     logger.info"<=sabbb====#{@current_location.data}======>"
     logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
-    exit
     
   end
 
