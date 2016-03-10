@@ -39,17 +39,17 @@ class LocationDetailsController < ApplicationController
 
   # PATCH/PUT /location_details/1
   # PATCH/PUT /location_details/1.json
-  def update
-    respond_to do |format|
-      if @location_detail.update(location_detail_params)
-        format.html { redirect_to @location_detail, notice: 'Location detail was successfully updated.' }
-        format.json { render :show, status: :ok, location: @location_detail }
-      else
-        format.html { render :edit }
-        format.json { render json: @location_detail.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+  # def update
+  #   respond_to do |format|
+  #     if @location_detail.update(location_detail_params)
+  #       format.html { redirect_to @location_detail, notice: 'Location detail was successfully updated.' }
+  #       format.json { render :show, status: :ok, location: @location_detail }
+  #     else
+  #       format.html { render :edit }
+  #       format.json { render json: @location_detail.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end
 
   # DELETE /location_details/1
   # DELETE /location_details/1.json
