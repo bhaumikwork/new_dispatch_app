@@ -62,21 +62,35 @@ class LocationDetailsController < ApplicationController
   end
 
   def location_detail_popup
-    logger.info"<===location==#{request.location.ip}========>"
-    Geocoder::Configuration.timeout = 30000
-    @current_location = Geocoder.search(request.location.ip).first
-    logger.info"<=curr====#{@current_location.data}======>"
-    logger.info"<=curr====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
     respond_to :js
   end
   def location_detail
     query = params[:street_number] + ',' + params[:street_address] + ',' + params[:city] + ',' + params[:state]
-    logger.info"<=====#{query}========>"
     Geocoder::Configuration.timeout = 30000
-    @current_location = Geocoder.search(query).first
+    @current_location = Geocoder.search(request.location.ip).first
+    @dest_location = Geocoder.search(query).first
+    geteta("origins="+ @current_location.latitude+","+@current_location.longitude+"&destinations="+@dest_location.latitude","+@dest_location.longitude)
+    current_dispatcher.location_details.create(source_lat:@current_location.latitude,source_long:@current_location.longitude,dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta)
     logger.info"<=sabbb====#{@current_location.data}======>"
     logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
     
+  end
+
+  def geteta(points)
+    logger.info"<=points====#{points}======>"
+    url = URI("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&"+points)
+    logger.info"<=url====#{url}======>"
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+    request = Net::HTTP::Get.new(url)
+
+    response = http.request(request)
+    @response = response.read_body
+    @response = Hash.from_xml(@response)
+    @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
+    @eta = @eta.round
   end
 
   private
