@@ -117,6 +117,7 @@ class LocationDetailsController < ApplicationController
     # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
     
     geteta
+    @location_detail.update(is_reached: true) if @eta <= 2
     respond_to :js
   end
 

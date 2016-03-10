@@ -1,5 +1,5 @@
-<% if @eta <= 2 %>
-	$('#tracking-result').html("Yupppiiii!!! You reached.!!")
+<% if @location_detail.is_reached %>
+	$('#tracking-result').html("<%= escape_javascript(render partial:'reached_to_destination') %>")
 <% else %>
 	$('#tracking-result').html("<%= escape_javascript(render partial:'tracking_result') %>")
 <% end %>
