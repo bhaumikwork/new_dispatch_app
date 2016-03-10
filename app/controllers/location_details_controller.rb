@@ -105,13 +105,13 @@ class LocationDetailsController < ApplicationController
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     Geocoder::Configuration.timeout = 30000
     @current_location = Geocoder.search(request.location.ip).first
-    set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
+    # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
     
     # bapunagar
     # set_source_and_dest_points(23.0333,72.6167,@location_detail.dest_lat,@location_detail.dest_long)
 
     # andhajan    23.034613,72.536014
-    # set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
+    set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
     
     #dinner bell  23.052180,72.537378
     # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
