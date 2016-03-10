@@ -1,14 +1,26 @@
-<div class="row">
-  <div id="map" style="width: 400px; height: 300px"></div> 
-</div>
-<div class="row">
-  <center>
-    <h3>
-  	<span id="timer-minutes"><%= @eta-1 %></span> minutes
-  	<span id="timer-sec">55</span> seconds
-    </h3>
-  </center>
-</div>
+<center>
+  <div class="row">
+    <div class="col-xs-5 box">
+      <h4>
+        <%= current_dispatcher.full_name %><br>
+        ETA is currently <%= @eta %> minutes
+      </h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-5 box">
+      <div id="map" style="width: 460 px; height: 300px"></div> 
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-5 box">
+      <h3>
+      	<span id="timer-minutes"><%= @eta-1 %></span> minutes
+      	<span id="timer-sec">55</span> seconds
+      </h3>
+    </div>
+  </div>
+</center>
 
 <script type="text/javascript">
   var map = new GMap2(document.getElementById("map"));

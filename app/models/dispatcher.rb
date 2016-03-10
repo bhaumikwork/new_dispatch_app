@@ -9,6 +9,9 @@ class Dispatcher < ActiveRecord::Base
   def name
     first_name.present? ? first_name : last_name.present? ? last_name : email
   end
+  def full_name
+    first_name + " " + last_name
+  end
 
   # on confirmation time ask for password for this below methods are override
   def password_required?
