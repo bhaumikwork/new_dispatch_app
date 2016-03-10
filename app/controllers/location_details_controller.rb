@@ -69,7 +69,7 @@ class LocationDetailsController < ApplicationController
     Geocoder::Configuration.timeout = 30000
     @current_location = Geocoder.search(request.location.ip).first
     @dest_location = Geocoder.search(query).first
-    geteta("origins="+ @current_location.latitude+","+@current_location.longitude+"&destinations="+@dest_location.latitude","+@dest_location.longitude)
+    geteta("origins="+ @current_location.latitude+","+@current_location.longitude+"&destinations="+@dest_location.latitude+","+@dest_location.longitude)
     current_dispatcher.location_details.create(source_lat:@current_location.latitude,source_long:@current_location.longitude,dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta)
     logger.info"<=sabbb====#{@current_location.data}======>"
     logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
