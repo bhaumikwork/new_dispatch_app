@@ -66,7 +66,7 @@ class LocationDetailsController < ApplicationController
   end
   def location_detail
     query = params[:street_number] + ',' + params[:street_address] + ',' + params[:city] + ',' + params[:state]
-    Geocoder::Configuration.timeout = 30000
+    Geocoder::Configuration.timeout = 10000
     @current_location = Geocoder.search(request.location.ip).first
     @dest_location = Geocoder.search(query).first
     set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@dest_location.latitude,@dest_location.longitude)
