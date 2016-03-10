@@ -4,7 +4,7 @@
       <button type="button" class="close" data-dismiss="modal">&times;</button>
       <h4 class="modal-title">Location Details</h4>
     </div>
-    <%= form_tag location_detail_resolve_path, id: 'location_detail' do |f| %>
+    <%= form_tag location_detail_resolve_path, id: 'location_detail',remote: true do |f| %>
       <div class="modal-body">
         <div class="row">
           <div class="form-group">
@@ -52,6 +52,12 @@
             <% sample_options = [['India', 'India'],['Washigton', 'Washigton'], ['Montana', '2'], ['Alaska', '3'],['New York','New York']] %>
               <%= select_tag :state,options_for_select([['Select...', '']] + sample_options),required: true %>
             </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div id="tracking-url">
+            
           </div>
         </div>
 

@@ -70,10 +70,11 @@ class LocationDetailsController < ApplicationController
     @current_location = Geocoder.search(request.location.ip).first
     @dest_location = Geocoder.search(query).first
     geteta("origins="+ @current_location.latitude.to_s+","+@current_location.longitude.to_s+"&destinations="+@dest_location.latitude.to_s+","+@dest_location.longitude.to_s)
-    current_dispatcher.location_details.create(source_lat:@current_location.latitude,source_long:@current_location.longitude,dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta)
+    @location_detail = current_dispatcher.location_details.create(source_lat:@current_location.latitude,source_long:@current_location.longitude,dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta)
+    # @location_detail = LocationDetail.first
     logger.info"<=sabbb====#{@current_location.data}======>"
     logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
-    
+    respond_to :js
   end
 
   def geteta(points)
@@ -91,6 +92,10 @@ class LocationDetailsController < ApplicationController
     @response = Hash.from_xml(@response)
     @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
     @eta = @eta.round
+  end
+
+  def tracking_result
+    @location_detail = LocationDetail.find_by_url_token(params[:url_token])
   end
 
   private

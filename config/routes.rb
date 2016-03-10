@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   end
   resources :location_details
   get 'location_detail_popup' => 'location_details#location_detail_popup'
+  get 'tracking_result/:url_token' => 'location_details#tracking_result',as: :tracking_result
   post 'location_detail' => 'location_details#location_detail', as: :'location_detail_resolve'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
