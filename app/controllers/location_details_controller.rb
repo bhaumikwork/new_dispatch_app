@@ -69,7 +69,8 @@ class LocationDetailsController < ApplicationController
     Geocoder::Configuration.timeout = 30000
     @current_location = Geocoder.search(request.location.ip).first
     @dest_location = Geocoder.search(query).first
-    geteta("origins="+ @current_location.latitude.to_s+","+@current_location.longitude.to_s+"&destinations="+@dest_location.latitude.to_s+","+@dest_location.longitude.to_s)
+    set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@dest_location.latitude,@dest_location.longitude)
+    geteta
     @location_detail = current_dispatcher.location_details.create(source_lat:@current_location.latitude,source_long:@current_location.longitude,dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta)
     # @location_detail = LocationDetail.first
     logger.info"<=sabbb====#{@current_location.data}======>"
@@ -77,9 +78,8 @@ class LocationDetailsController < ApplicationController
     respond_to :js
   end
 
-  def geteta(points)
-    logger.info"<=points====#{points}======>"
-    url = URI("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&"+points)
+  def geteta
+    url = URI("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=#{@source_point}&destinations=#{@dest_point}")
     logger.info"<=url====#{url}======>"
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
@@ -97,6 +97,7 @@ class LocationDetailsController < ApplicationController
 
   def tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
+    set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
     @eta = @location_detail.eta
   end
 
@@ -104,14 +105,18 @@ class LocationDetailsController < ApplicationController
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     Geocoder::Configuration.timeout = 30000
     @current_location = Geocoder.search(request.location.ip).first
+    set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
+    
     # bapunagar
-    geteta("origins="+ 23.0333.to_s+","+72.6167.to_s+"&destinations="+@location_detail.dest_lat+","+@location_detail.dest_long)
+    # set_source_and_dest_points(23.0333,72.6167,@location_detail.dest_lat,@location_detail.dest_long)
 
     # andhajan    23.034613,72.536014
-    # geteta("origins="+ 23.034613.to_s+","+72.536014.to_s+"&destinations="+@location_detail.dest_lat+","+@location_detail.dest_long)
+    # set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
     
     #dinner bell  23.052180,72.537378
-    # geteta("origins="+ 23.052180.to_s+","+72.537378.to_s+"&destinations="+@location_detail.dest_lat+","+@location_detail.dest_long)
+    # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
+    
+    geteta
     respond_to :js
   end
 
@@ -124,5 +129,10 @@ class LocationDetailsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def location_detail_params
       params.require(:location_detail).permit(:dest_lat, :dest_long, :source_lat, :source_long, :eta, :url_token, :dispatcher_id)
+    end
+    #set source and dest lat-long
+    def set_source_and_dest_points(source_lat,source_long,dest_lat,dest_long)
+      @source_point = source_lat.to_s+","+source_long.to_s
+      @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
 end

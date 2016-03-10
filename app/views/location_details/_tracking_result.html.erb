@@ -1,4 +1,7 @@
 <div class="row">
+  <div id="map" style="width: 400px; height: 300px"></div> 
+</div>
+<div class="row">
   <center>
     <h3>
   	<span id="timer-minutes"><%= @eta-1 %></span> minutes
@@ -6,39 +9,47 @@
     </h3>
   </center>
 </div>
+
 <script type="text/javascript">
-	var count_secs=55;
-	var count_minutes='<%= @eta-1 %>'
-	// var count_minutes=1
+  var map = new GMap2(document.getElementById("map"));
+  var directions = new GDirections(map);
+  var isCreateHeadPoint = true;
+  var headMarker, tailMarker;
+  // sets map center
+  map.setCenter(new GLatLng(23.03, +72.61), 12);
+  // sets direction polyline
+  console.log("from:<%= @source_point %> to:<%= @dest_point %>");
+  directions.load("from:<%= @source_point %> to:<%= @dest_point %>", 
+                         { getPolyline: true, getSteps: true }); 
+  var count_secs=10;
+	// var count_minutes='<%= @eta-1 %>'
+	var count_minutes=1
 
-var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+  var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
-function timer()
-{
-  count_secs=count_secs-1;
-  if (count_secs <= 0)
+  function timer()
   {
-     count_secs = 60;
-    // clearInterval(counter);
-    count_minutes = count_minutes-1;
-    if (count_minutes >= 0)
-  		$("#timer-minutes").html(count_minutes);
-     //counter ended, do something here
-    // return;
-  }
+    count_secs=count_secs-1;
+    if (count_secs <= 0)
+    {
+      count_secs = 10;
+      count_minutes = count_minutes-1;
+      if (count_minutes >= 0)
+    		$("#timer-minutes").html(count_minutes);
+    }
 
-  if (count_minutes < 0){
-  	clearInterval(counter);
-  	$.ajax({
-			url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
-			type: 'get',
-			data: {},
-			success: function (data) {
-				data
-			}
-		});
-  	return;
+    if (count_minutes < 0){
+    	clearInterval(counter);
+    	$.ajax({
+  			url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
+  			type: 'get',
+  			data: {},
+  			success: function (data) {
+  				data
+  			}
+  		});
+    	return;
+    }
+    $("#timer-sec").html(count_secs);
   }
-  $("#timer-sec").html(count_secs);
-}
 </script>
