@@ -1,5 +1,9 @@
+<!-- 
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false" 
-           type="text/javascript"></script>
+           type="text/javascript"></script> -->
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+    </script>
 <div id="tracking-result">
 	<% if @location_detail.is_reached %>
 		<%= render partial: 'reached_to_destination' %>
@@ -14,4 +18,7 @@
 	margin:5px;
 	padding: 5px;
 }
+#map {
+        pointer-events:none;
+      }
 </style>

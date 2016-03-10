@@ -65,7 +65,7 @@
 
       </div>
       <div class="modal-footer">
-        <%= submit_tag "Save" ,:class=>"btn btn-primary"%>
+        <%= submit_tag "Save" ,:class=>"btn btn-primary",data: { disable_with: "Please wait..." }%>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     <% end %>
