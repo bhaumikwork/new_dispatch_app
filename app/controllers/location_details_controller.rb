@@ -92,10 +92,27 @@ class LocationDetailsController < ApplicationController
     @response = Hash.from_xml(@response)
     @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
     @eta = @eta.round
+    logger.info"<=eta====#{@eta}======>"
   end
 
   def tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
+    @eta = @location_detail.eta
+  end
+
+  def refresh_tracking_result
+    @location_detail = LocationDetail.find_by_url_token(params[:url_token])
+    Geocoder::Configuration.timeout = 30000
+    @current_location = Geocoder.search(request.location.ip).first
+    # bapunagar
+    geteta("origins="+ 23.0333.to_s+","+72.6167.to_s+"&destinations="+@location_detail.dest_lat+","+@location_detail.dest_long)
+
+    # andhajan    23.034613,72.536014
+    # geteta("origins="+ 23.034613.to_s+","+72.536014.to_s+"&destinations="+@location_detail.dest_lat+","+@location_detail.dest_long)
+    
+    #dinner bell  23.052180,72.537378
+    # geteta("origins="+ 23.052180.to_s+","+72.537378.to_s+"&destinations="+@location_detail.dest_lat+","+@location_detail.dest_long)
+    respond_to :js
   end
 
   private
