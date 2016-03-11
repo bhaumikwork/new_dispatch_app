@@ -91,8 +91,14 @@ class LocationDetailsController < ApplicationController
     response = http.request(request)
     @response = response.read_body
     @response = Hash.from_xml(@response)
-    @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
-    @eta = @eta.round
+    logger.info"<=eta response====#{@response}======>"
+    @error = false
+    if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
+      @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
+      @eta = @eta.round
+    else
+      @error = true
+    end
     logger.info"<=eta====#{@eta}======>"
   end
 

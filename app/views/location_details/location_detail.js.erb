@@ -1,1 +1,5 @@
-$('#tracking-url').html('<a href="<%= tracking_result_path(@location_detail.url_token)%>"><%= tracking_result_url(@location_detail.url_token)%></a>');
+<% if @error %>
+	$('#tracking-url').html('<div class="error">Please enter valid address.</div>')
+<% else %>
+	$('#tracking-url').html('<a href="<%= tracking_result_path(@location_detail.url_token)%>"><%= tracking_result_url(@location_detail.url_token)%></a>');
+<% end %>
