@@ -13,6 +13,9 @@
  *= require_tree .
  *= require_self
  */
- .mandatory{
+ .mandatory,.error{
  	color: red;
+ }
+ .pac-container{
+ 	z-index: 9999;
  }
