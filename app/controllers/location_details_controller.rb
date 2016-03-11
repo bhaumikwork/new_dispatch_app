@@ -114,7 +114,10 @@ class LocationDetailsController < ApplicationController
 
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long]) if @location_detail.dispatcher == current_dispatcher
+    if @location_detail.dispatcher == current_dispatcher
+      temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
+      logger.info"<==updates====#{temp}==========>"
+    end
     Geocoder::Configuration.timeout = 10000
     # @current_location = Geocoder.search(request.location.ip).first
     set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
