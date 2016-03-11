@@ -67,14 +67,15 @@ class LocationDetailsController < ApplicationController
   def location_detail
     query = params[:street_number] + ',' + params[:street_address] + ',' + params[:city] + ',' + params[:state]
     Geocoder::Configuration.timeout = 10000
-    @current_location = Geocoder.search(request.location.ip).first
+    # @current_location = Geocoder.search(request.location.ip).first
     @dest_location = Geocoder.search(query).first
-    set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@dest_location.latitude,@dest_location.longitude)
+    # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@dest_location.latitude,@dest_location.longitude)
+    set_source_and_dest_points(params[:curr_lat],params[:curr_long],@dest_location.latitude,@dest_location.longitude)
     geteta
-    @location_detail = current_dispatcher.location_details.create(source_lat:@current_location.latitude,source_long:@current_location.longitude,dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta)
+    @location_detail = current_dispatcher.location_details.create(source_lat:params[:curr_lat],source_long:params[:curr_long],dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta)
     # @location_detail = LocationDetail.first
-    logger.info"<=sabbb====#{@current_location.data}======>"
-    logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
+    # logger.info"<=sabbb====#{@current_location.data}======>"
+    # logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
     respond_to :js
   end
 
@@ -103,15 +104,16 @@ class LocationDetailsController < ApplicationController
 
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    Geocoder::Configuration.timeout = 30000
-    @current_location = Geocoder.search(request.location.ip).first
+    Geocoder::Configuration.timeout = 10000
+    # @current_location = Geocoder.search(request.location.ip).first
+    set_source_and_dest_points(params[:curr_lat],params[:curr_long],@location_detail.dest_lat,@location_detail.dest_long)
     # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
     
     # bapunagar
     # set_source_and_dest_points(23.0333,72.6167,@location_detail.dest_lat,@location_detail.dest_long)
 
     # andhajan    23.034613,72.536014
-    set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
+    # set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
     
     #dinner bell  23.052180,72.537378
     # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
