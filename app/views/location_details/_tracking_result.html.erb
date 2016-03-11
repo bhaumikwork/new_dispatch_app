@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-xs-5 box">
       <h4>
-        <%= current_dispatcher.full_name %><br>
+        <%= @location_detail.dispatcher.full_name %><br>
         ETA is currently <%= @eta %> minutes
       </h4>
     </div>
@@ -14,6 +14,7 @@
   </div>
   <div class="row">
     <div class="col-xs-5 box">
+      <h5>Next ETA will be available in :</h5>
       <h3>
       	<span id="timer-minutes"><%= @eta-1 %></span> minutes
       	<span id="timer-sec">55</span> seconds
@@ -34,13 +35,17 @@
   //                        { getPolyline: true, getSteps: true }); 
       var map;
       var intl;
-     
+
       function initMap() {
         intl = setInterval(function(){
           if(curr_long){
             clearInterval(intl);
             initMapContinue();
-          }            
+          }
+          else{
+            if (!in_function)
+              getLocation();
+          }
         },1000);
       }
       function initMapContinue(){
@@ -56,15 +61,14 @@
           fullscreenControl: false,
           scrollwheel: false,
           navigationControl: false,
-          mapTypeControl: false,         
+          mapTypeControl: false,
           draggable: false,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         });
         directionsDisplay.setMap(null);
         directionsDisplay.setMap(map);
-
         directionsService.route({
-          origin: curr_lat+','+curr_long,
+          origin: '<%= @source_point %>',
           destination: '<%= @dest_point %>',
           travelMode: google.maps.TravelMode.DRIVING
         }, function(response, status) {
@@ -76,9 +80,9 @@
         });
     } 
     
-  var count_secs=60;
-	var count_minutes='<%= @eta-1 %>'
-	// var count_minutes=1;
+  var count_secs=10;
+	// var count_minutes='<%= @eta-1 %>'
+	var count_minutes=1;
 
   var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
@@ -87,7 +91,7 @@
     count_secs=count_secs-1;
     if (count_secs <= 0)
     {
-      count_secs = 60;
+      count_secs = 10;
       count_minutes = count_minutes-1;
       if (count_minutes >= 0)
     		$("#timer-minutes").html(count_minutes);

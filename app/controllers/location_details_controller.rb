@@ -72,7 +72,7 @@ class LocationDetailsController < ApplicationController
     # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@dest_location.latitude,@dest_location.longitude)
     set_source_and_dest_points(params[:curr_lat],params[:curr_long],@dest_location.latitude,@dest_location.longitude)
     geteta
-    @location_detail = current_dispatcher.location_details.create(source_lat:params[:curr_lat],source_long:params[:curr_long],dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta)
+    @location_detail = current_dispatcher.location_details.create(source_lat:params[:curr_lat],source_long:params[:curr_long],dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta,curr_lat:params[:curr_lat],curr_long:params[:curr_long])
     # @location_detail = LocationDetail.first
     # logger.info"<=sabbb====#{@current_location.data}======>"
     # logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
@@ -110,9 +110,10 @@ class LocationDetailsController < ApplicationController
 
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
+    @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long]) if @location_detail.dispatcher == current_dispatcher
     Geocoder::Configuration.timeout = 10000
     # @current_location = Geocoder.search(request.location.ip).first
-    set_source_and_dest_points(params[:curr_lat],params[:curr_long],@location_detail.dest_lat,@location_detail.dest_long)
+    set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
     
     # bapunagar
@@ -142,6 +143,7 @@ class LocationDetailsController < ApplicationController
     #set source and dest lat-long
     def set_source_and_dest_points(source_lat,source_long,dest_lat,dest_long)
       @source_point = source_lat.to_s+","+source_long.to_s
+      logger.info"<===spoint=====#{@source_point}======>"
       @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
 end

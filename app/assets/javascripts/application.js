@@ -16,11 +16,13 @@
 //= require_tree .
 	var curr_lat;
 	var curr_long;
+	var in_function;
 		function showPosition(position) {
 			curr_lat = position.coords.latitude;
 			curr_long = position.coords.longitude;
 		}
 		function getLocation() {
+			in_function = true;
 	    if (navigator.geolocation) {
 	    	navigator.geolocation.watchPosition(showPosition);
 	    } else { 
