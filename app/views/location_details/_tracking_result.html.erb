@@ -81,11 +81,11 @@
         });
     } 
     
-  var count_secs=10;
+  var count_secs=55;
 	var count_hours='<%= @eta_hr %>';
-  // var count_minutes='<%= @eta_min %>'
+  var count_minutes='<%= @eta_min %>'
   // var count_hours=0;
-  var count_minutes=6;
+  // var count_minutes=6;
 
   var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
@@ -94,14 +94,14 @@
     count_secs=count_secs-1;
     if (count_secs <= 0)
     {
-      count_secs = 10;
+      count_secs = 59;
       count_minutes = count_minutes-1;
       if (count_minutes >= 0)
     		$("#timer-minutes").html(count_minutes);
     }
     if (count_minutes < 0)
     {
-      count_minutes = 1;
+      count_minutes = 59;
       $("#timer-minutes").html(count_minutes);
       count_hours = count_hours-1;
       if (count_hours >= 0)
