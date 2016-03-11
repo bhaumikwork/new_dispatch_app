@@ -12,3 +12,11 @@ $modal.modal();
 $('#location_detail').append(hid_curr_lat);
 $('#location_detail').append(hid_curr_long);
 fill_lat_long();
+jQuery.validator.addMethod("lettersonly", function(value, element) {
+  return this.optional(element) || /^[a-z]+$/i.test(value);
+}, "Letters only please"); 
+$('#location_detail').validate({
+          rules:{
+            street_address:{lettersonly:true}
+          }
+          });

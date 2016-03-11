@@ -13,6 +13,6 @@
  *= require_tree .
  *= require_self
  */
- .mandatory{
+ .mandatory,.error{
  	color: red;
  }
