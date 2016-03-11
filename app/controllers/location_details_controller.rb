@@ -142,7 +142,7 @@ class LocationDetailsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def location_detail_params
-      params.require(:location_detail).permit(:dest_lat, :dest_long, :source_lat, :source_long, :eta, :url_token, :dispatcher_id)
+      params.require(:location_detail).permit(:dest_lat, :dest_long, :source_lat, :source_long, :eta, :url_token, :dispatcher_id,:curr_lat,:curr_long)
     end
     #set source and dest lat-long
     def set_source_and_dest_points(source_lat,source_long,dest_lat,dest_long)
