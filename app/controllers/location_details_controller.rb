@@ -96,6 +96,8 @@ class LocationDetailsController < ApplicationController
     if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
       @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
       @eta = @eta.round
+      @eta_min = (@eta-1)%60
+      @eta_hr = (@eta-1)/60
     else
       @error = true
     end
@@ -106,6 +108,8 @@ class LocationDetailsController < ApplicationController
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
     @eta = @location_detail.eta
+    @eta_min = (@eta-1)%60
+    @eta_hr = (@eta-1)/60
   end
 
   def refresh_tracking_result

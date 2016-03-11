@@ -3,7 +3,7 @@
     <div class="col-xs-5 box">
       <h4>
         <%= @location_detail.dispatcher.full_name %><br>
-        ETA is currently <%= @eta %> minutes
+        ETA is currently <%= @eta_hr %> hours <%= @eta_min + 1 %> minutes
       </h4>
     </div>
   </div>
@@ -16,7 +16,8 @@
     <div class="col-xs-5 box">
       <h5>Next ETA will be available in :</h5>
       <h3>
-      	<span id="timer-minutes"><%= @eta-1 %></span> minutes
+        <span id="timer-hours"><%= @eta_hr %></span> hours
+      	<span id="timer-minutes"><%= @eta_min + 1 %></span> minutes
       	<span id="timer-sec">55</span> seconds
       </h3>
     </div>
@@ -81,8 +82,10 @@
     } 
     
   var count_secs=10;
-	// var count_minutes='<%= @eta-1 %>'
-	var count_minutes=1;
+	var count_hours='<%= @eta_hr %>';
+  // var count_minutes='<%= @eta_min %>'
+  // var count_hours=0;
+  var count_minutes=1;
 
   var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
@@ -96,7 +99,15 @@
       if (count_minutes >= 0)
     		$("#timer-minutes").html(count_minutes);
     }
-    if (count_minutes < 0){
+    if (count_minutes < 0)
+    {
+      count_minutes = 1;
+      $("#timer-minutes").html(count_minutes);
+      count_hours = count_hours-1;
+      if (count_hours >= 0)
+        $("#timer-hours").html(count_hours);
+    }
+    if (count_hours < 0){
     	clearInterval(counter);
     	refreshInternal();
     	return;
