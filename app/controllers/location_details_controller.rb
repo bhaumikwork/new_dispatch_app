@@ -117,6 +117,7 @@ class LocationDetailsController < ApplicationController
     if @location_detail.dispatcher == current_dispatcher
       temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
       logger.info"<==updates====#{temp}==========>"
+      logger.info"<==updates=rec===#{@location_detail.inspect}==========>"
     end
     Geocoder::Configuration.timeout = 10000
     # @current_location = Geocoder.search(request.location.ip).first
