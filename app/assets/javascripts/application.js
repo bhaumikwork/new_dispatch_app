@@ -17,15 +17,18 @@
 	var curr_lat;
 	var curr_long;
 	var in_function;
-		function showPosition(position) {
-			curr_lat = position.coords.latitude;
-			curr_long = position.coords.longitude;
-		}
-		function getLocation() {
-			in_function = true;
-	    if (navigator.geolocation) {
-	    	navigator.geolocation.watchPosition(showPosition);
-	    } else { 
-	       alert("Geolocation is not supported by this browser.");
-	    }
+	function showPosition(position) {
+		curr_lat = position.coords.latitude;
+		curr_long = position.coords.longitude;
+	}
+	function getLocation() {
+		in_function = true;
+    if (navigator.geolocation) {
+    	navigator.geolocation.watchPosition(showPosition,positionError);
+    } else {
+       alert("Geolocation is not supported by this browser.");
+    }
+	}
+	function positionError() {
+    $('.error').html('You have not clicked on allow button to share your location. So we can not track the current location. It will not work')
 	}
