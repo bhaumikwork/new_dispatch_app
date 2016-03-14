@@ -30,5 +30,5 @@
     }
 	}
 	function positionError() {
-    $('.error').html('You have not clicked on allow button to share your location. So we can not track the current location. It will not work')
+    $('.error').html('You have not clicked on allow button to share your location. So we can not track the current location. It will not work.')
 	}
