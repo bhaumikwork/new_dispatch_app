@@ -17,6 +17,7 @@
 	var curr_lat;
 	var curr_long;
 	var in_function;
+	var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
 	function showPosition(position) {
 		curr_lat = position.coords.latitude;
 		curr_long = position.coords.longitude;
@@ -24,7 +25,7 @@
 	function getLocation() {
 		in_function = true;
     if (navigator.geolocation) {
-    	navigator.geolocation.watchPosition(showPosition,positionError);
+    	navigator.geolocation.watchPosition(showPosition,positionError,options);
     } else {
        alert("Geolocation is not supported by this browser.");
     }
