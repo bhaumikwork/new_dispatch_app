@@ -38,18 +38,23 @@
       var intl;
 
       function initMap() {
-        intl = setInterval(function(){
-          if(curr_long){
-            clearInterval(intl);
-            $('.error').html("");
-            initMapContinue();
-          }
-          else{
-            if (!in_function)
-              getLocation();
-              // $('.error').html("You have not clicked on allow button to share your location. So we can not track the current location. It will not work.")
-          }
-        },1000);
+        <% if current_dispatcher == @location_detail.dispatcher %>
+        alert("inside");
+          intl = setInterval(function(){
+            if(curr_long){
+              clearInterval(intl);
+              $('.error').html("");
+              initMapContinue();
+            }
+            else{
+              if (!in_function)
+                getLocation();
+                // $('.error').html("You have not clicked on allow button to share your location. So we can not track the current location. It will not work.")
+            }
+          },1000);
+        <% else %>
+          initMapContinue();
+        <% end %>
       }
       function initMapContinue(){
         var directionsService = new google.maps.DirectionsService;

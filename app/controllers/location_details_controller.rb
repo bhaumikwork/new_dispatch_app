@@ -1,5 +1,6 @@
 class LocationDetailsController < ApplicationController
   before_action :set_location_detail, only: [:show, :edit, :update, :destroy]
+  before_action :check_curr_location,only: :tracking_result
 
   # GET /location_details
   # GET /location_details.json
@@ -187,6 +188,6 @@ class LocationDetailsController < ApplicationController
         @timer_min = @timer_min-1 unless @tmp_eta < @location_detail.current_eta
       end
       @timer_hr = @timer_hr < 0 ? 0 : @timer_hr
-      @timer_min = @timer_min < 0 ? 0 : @timer_min
+      @timer_min = @timer_min < 0 ? 1 : @timer_min
     end
 end
