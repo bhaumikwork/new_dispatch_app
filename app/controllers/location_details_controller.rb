@@ -72,7 +72,19 @@ class LocationDetailsController < ApplicationController
     # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@dest_location.latitude,@dest_location.longitude)
     set_source_and_dest_points(params[:curr_lat],params[:curr_long],@dest_location.latitude,@dest_location.longitude)
     geteta
-    @location_detail = current_dispatcher.location_details.create(source_lat:params[:curr_lat],source_long:params[:curr_long],dest_lat:@dest_location.latitude,dest_long:@dest_location.longitude,eta:@eta,curr_lat:params[:curr_lat],curr_long:params[:curr_long])
+    unless @error
+      @location_detail = current_dispatcher.location_details.create(
+        source_lat:params[:curr_lat],
+        source_long:params[:curr_long],
+        dest_lat:@dest_location.latitude,
+        dest_long:@dest_location.longitude,
+        eta:@eta,
+        curr_lat:params[:curr_lat],
+        curr_long:params[:curr_long],
+        eta_calc_time:Time.zone.now,
+        current_eta:@eta
+      )
+    end
     # @location_detail = LocationDetail.first
     # logger.info"<=sabbb====#{@current_location.data}======>"
     # logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
@@ -96,8 +108,8 @@ class LocationDetailsController < ApplicationController
     if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
       @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
       @eta = @eta.round
-      @eta_min = (@eta-1)%60
-      @eta_hr = (@eta-1)/60
+      @eta_min = (@eta)%60
+      @eta_hr = (@eta)/60
     else
       @error = true
     end
@@ -108,8 +120,10 @@ class LocationDetailsController < ApplicationController
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
     @eta = @location_detail.eta
-    @eta_min = (@eta-1)%60
-    @eta_hr = (@eta-1)/60
+    @eta_min = (@eta)%60
+    @eta_hr = (@eta)/60
+    set_timer_vars
+    logger.info"<=timer====#{@timer_hr}===#{@timer_min}====>"
   end
 
   def refresh_tracking_result
@@ -134,7 +148,11 @@ class LocationDetailsController < ApplicationController
     # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
     
     geteta
-    @location_detail.update(is_reached: true) if @eta <= 2
+    @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now)
+    set_timer_vars
+    if @eta <= 2
+      @location_detail.update(is_reached: true,current_eta: @eta) 
+    end
     respond_to :js
   end
 
@@ -153,5 +171,22 @@ class LocationDetailsController < ApplicationController
       @source_point = source_lat.to_s+","+source_long.to_s
       logger.info"<===spoint=====#{@source_point}======>"
       @dest_point= dest_lat.to_s+","+dest_long.to_s
+    end
+    def set_timer_vars
+      @timer_sec = ((Time.zone.now - @location_detail.eta_calc_time).round % 60)
+      logger.info"<=time===#{Time.zone.now}=======#{@location_detail.eta_calc_time}==>"
+      logger.info"<=time diff===#{@timer_sec}=======#{Time.zone.now - @location_detail.eta_calc_time}==>"
+      diff = ((Time.zone.now - @location_detail.eta_calc_time)/60).round
+      @tmp_eta = @location_detail.current_eta - (diff)
+      logger.info"<=tmp eta===#{@tmp_eta}=======ll==>"
+      
+      @timer_hr = @tmp_eta/60 
+      @timer_min = @tmp_eta%60
+      unless diff > 0 
+        @timer_sec = 55
+        @timer_min = @timer_min-1 unless @tmp_eta < @location_detail.current_eta
+      end
+      @timer_hr = @timer_hr < 0 ? 0 : @timer_hr
+      @timer_min = @timer_min < 0 ? 0 : @timer_min
     end
 end
