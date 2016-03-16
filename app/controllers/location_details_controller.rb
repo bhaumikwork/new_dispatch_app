@@ -1,6 +1,5 @@
 class LocationDetailsController < ApplicationController
   before_action :set_location_detail, only: [:show, :edit, :update, :destroy]
-  before_action :check_curr_location,only: :tracking_result
 
   # GET /location_details
   # GET /location_details.json
