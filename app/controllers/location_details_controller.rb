@@ -178,6 +178,7 @@ class LocationDetailsController < ApplicationController
       logger.info"<=time diff===#{@timer_sec}=======#{Time.zone.now - @location_detail.eta_calc_time}==>"
       diff = ((Time.zone.now - @location_detail.eta_calc_time)/60).round
       @tmp_eta = @location_detail.current_eta - (diff)
+      @tmp_eta = 0 if @tmp_eta < 0
       logger.info"<=tmp eta===#{@tmp_eta}=======ll==>"
       
       @timer_hr = @tmp_eta/60 
