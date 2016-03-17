@@ -1,18 +1,20 @@
 <div class="row">
-	<div>
-		<p>Your Location details are now being broadcast</p>
-		<p>This is the URL you can share</p>
-		<%= link_to tracking_result_url(@location_detail.url_token),tracking_result_path(@location_detail.url_token) %><br><br>
-		<%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token) %>
-			
-	</div>
+	<% if @error %>
+		<div class="error">Please enter valid address.</div>
+		<%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path%>
+	<% else %>
+		<div>
+			<p>Your Location details are now being broadcast</p>
+			<p>This is the URL you can share:</p>
+			<%= link_to tracking_result_url(@location_detail.url_token),tracking_result_path(@location_detail.url_token) %><br><br>
+			<%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token),id: 'random_url' %>
+				
+		</div>
+	<% end %>
 </div>
 <script type="text/javascript">
-	//By using JavaScript
-    // window.onbeforeunload = function () {
-    //     return 'please save your setting before leaving the page';
-    // }
-   $(window).on('popstate', function(event) {
- alert("pop");
-});
+  // $('#random_url').o
+  window.onbeforeunload = function () {
+      return 'please save your setting before leaving the page';
+  }
 </script>
