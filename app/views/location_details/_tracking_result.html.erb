@@ -108,7 +108,8 @@
     if (count_minutes < 0)
     {
       count_minutes = 59;
-      $("#timer-minutes").html(count_minutes);
+      if (count_hours > 0)
+        $("#timer-minutes").html(count_minutes);
       count_hours = count_hours-1;
       if (count_hours >= 0)
         $("#timer-hours").html(count_hours);
