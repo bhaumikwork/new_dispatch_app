@@ -89,7 +89,6 @@ class LocationDetailsController < ApplicationController
     # @location_detail = LocationDetail.first
     # logger.info"<=sabbb====#{@current_location.data}======>"
     # logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
-    respond_to :js
   end
 
   def geteta
@@ -120,9 +119,9 @@ class LocationDetailsController < ApplicationController
   def tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     if @location_detail.dispatcher == current_dispatcher
-      @is_display = true if @location_detail.dispatcher_refresh_count < 3
+      @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
     else
-      @is_display = true if @location_detail.receiver_refresh_count < 3
+      @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
     end
     if @is_display
       set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
@@ -137,9 +136,9 @@ class LocationDetailsController < ApplicationController
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     if @location_detail.dispatcher == current_dispatcher
-      @is_display = true if @location_detail.dispatcher_refresh_count < 3
+      @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
     else
-      @is_display = true if @location_detail.receiver_refresh_count < 3
+      @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
     end
     if @is_display
       if @location_detail.dispatcher == current_dispatcher

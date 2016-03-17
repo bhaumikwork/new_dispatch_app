@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160317081940) do
+ActiveRecord::Schema.define(version: 20160317120514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 20160317081940) do
     t.integer  "current_eta"
     t.integer  "receiver_refresh_count",   default: 0
     t.integer  "dispatcher_refresh_count", default: 0
+    t.boolean  "is_terminate",             default: false
   end
 
   add_index "location_details", ["dispatcher_id"], name: "index_location_details_on_dispatcher_id", using: :btree
