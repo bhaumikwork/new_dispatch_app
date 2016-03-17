@@ -173,8 +173,8 @@ class LocationDetailsController < ApplicationController
       @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
     def set_timer_vars
+      logger.info"<=time====#{Time.zone}====#{Time.zone.now}=======#{@location_detail.eta_calc_time}==>"
       @timer_sec = ((Time.zone.now - @location_detail.eta_calc_time).round % 60)
-      logger.info"<=time===#{Time.zone.now}=======#{@location_detail.eta_calc_time}==>"
       logger.info"<=time diff===#{@timer_sec}=======#{Time.zone.now - @location_detail.eta_calc_time}==>"
       diff = ((Time.zone.now - @location_detail.eta_calc_time)/60).round
       @tmp_eta = @location_detail.current_eta - (diff)
