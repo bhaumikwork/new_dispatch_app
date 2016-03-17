@@ -13,13 +13,10 @@
 	<% end %>
 </div>
 <script type="text/javascript">
-  var flg_back = false
   $( "#random_url" ).click(function() {
-	  flg_back = true
+	  window.onbeforeunload = null;
 	});
-	if (flg_back){
-	  window.onbeforeunload = function () {
-	      return 'please save your setting before leaving the page';
-	  }
-	}
+  window.onbeforeunload = function () {
+    return 'Your Tracking will stop,Do you wish to continue and return to dashboard?';
+  }
 </script>
