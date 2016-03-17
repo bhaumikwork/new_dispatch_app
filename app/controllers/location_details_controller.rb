@@ -130,7 +130,6 @@ class LocationDetailsController < ApplicationController
       @eta_min = (@eta)%60
       @eta_hr = (@eta)/60
       set_timer_vars
-      set_refresh_count
       logger.info"<=timer====#{@timer_hr}===#{@timer_min}====>"
     end
   end
@@ -165,7 +164,6 @@ class LocationDetailsController < ApplicationController
       geteta
       @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
       set_timer_vars
-      set_refresh_count
       if @eta <= 2
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
