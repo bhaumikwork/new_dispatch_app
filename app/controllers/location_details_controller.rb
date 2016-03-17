@@ -138,29 +138,37 @@ class LocationDetailsController < ApplicationController
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     if @location_detail.dispatcher == current_dispatcher
-      temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
-      logger.info"<==updates====#{temp}==========>"
-      logger.info"<==updates=rec===#{@location_detail.inspect}==========>"
+      @is_display = true if @location_detail.dispatcher_refresh_count < 3
+    else
+      @is_display = true if @location_detail.receiver_refresh_count < 3
     end
-    Geocoder::Configuration.timeout = 10000
-    # @current_location = Geocoder.search(request.location.ip).first
-    set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
-    # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
-    
-    # bapunagar
-    # set_source_and_dest_points(23.0333,72.6167,@location_detail.dest_lat,@location_detail.dest_long)
+    if @is_display
+      if @location_detail.dispatcher == current_dispatcher
+        temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
+        logger.info"<==updates====#{temp}==========>"
+        logger.info"<==updates=rec===#{@location_detail.inspect}==========>"
+      end
+      Geocoder::Configuration.timeout = 10000
+      # @current_location = Geocoder.search(request.location.ip).first
+      set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
+      # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
+      
+      # bapunagar
+      # set_source_and_dest_points(23.0333,72.6167,@location_detail.dest_lat,@location_detail.dest_long)
 
-    # andhajan    23.034613,72.536014
-    # set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
-    
-    #dinner bell  23.052180,72.537378
-    # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
-    
-    geteta
-    @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
-    set_timer_vars
-    if @eta <= 2
-      @location_detail.update(is_reached: true,current_eta: @eta) 
+      # andhajan    23.034613,72.536014
+      # set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
+      
+      #dinner bell  23.052180,72.537378
+      # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
+      
+      geteta
+      @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
+      set_timer_vars
+      set_refresh_count
+      if @eta <= 2
+        @location_detail.update(is_reached: true,current_eta: @eta) 
+      end
     end
     respond_to :js
   end

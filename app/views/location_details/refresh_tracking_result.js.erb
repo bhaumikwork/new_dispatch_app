@@ -1,10 +1,14 @@
-<% if @error %>
-	$('#tracking-url').html('<div class="error">Please enter valid address.</div>')
-<% else %>
-	<% if @location_detail.is_reached %>
-		$('#tracking-result').html("<%= escape_javascript(render partial:'reached_to_destination') %>")
+<% if @is_display %>
+	<% if @error %>
+		$('#tracking-result').html('<div class="error">Please enter valid address.</div>')
 	<% else %>
-		$('#tracking-result').html("<%= escape_javascript(render partial:'tracking_result') %>")
+		<% if @location_detail.is_reached %>
+			$('#tracking-result').html("<%= escape_javascript(render partial:'reached_to_destination') %>")
+		<% else %>
+			$('#tracking-result').html("<%= escape_javascript(render partial:'tracking_result') %>")
+		<% end %>
+		initMap();
 	<% end %>
-	initMap();
+<% else %>
+	$('#tracking-result').html("<%= escape_javascript(render partial:'api_limit_exceeds') %>")
 <% end %>
