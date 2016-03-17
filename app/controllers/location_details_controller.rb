@@ -210,8 +210,10 @@ class LocationDetailsController < ApplicationController
     def set_refresh_count
       if @location_detail.dispatcher == current_dispatcher
         @location_detail.increment!(:dispatcher_refresh_count)
+        logger.info"<====in set refresh count===if ==>"
       else
         @location_detail.increment!(:receiver_refresh_count)
+        logger.info"<====in set refresh count===else ==>"
       end
     end
 end
