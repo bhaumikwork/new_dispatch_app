@@ -16,14 +16,20 @@
 //= require_tree .
 	var curr_lat;
 	var curr_long;
-		function showPosition(position) {
-			curr_lat = position.coords.latitude;
-			curr_long = position.coords.longitude;
-		}
-		function getLocation() {
-	    if (navigator.geolocation) {
-	    	navigator.geolocation.watchPosition(showPosition);
-	    } else { 
-	       alert("Geolocation is not supported by this browser.");
-	    }
+	var in_function;
+	var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
+	function showPosition(position) {
+		curr_lat = position.coords.latitude;
+		curr_long = position.coords.longitude;
+	}
+	function getLocation() {
+		in_function = true;
+    if (navigator.geolocation) {
+    	navigator.geolocation.watchPosition(showPosition,positionError,options);
+    } else {
+       alert("Geolocation is not supported by this browser.");
+    }
+	}
+	function positionError() {
+    $('.error').html('You have not clicked on allow button to share your location. So we can not track the current location. It will not work.')
 	}

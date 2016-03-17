@@ -2,8 +2,8 @@
   <div class="row">
     <div class="col-xs-5 box">
       <h4>
-        <%= current_dispatcher.full_name %><br>
-        ETA is currently <%= @eta %> minutes
+        <%= @location_detail.dispatcher.full_name %><br>
+        ETA is currently <%= @eta_hr %> hours <%= @eta_min %> minutes
       </h4>
     </div>
   </div>
@@ -14,9 +14,11 @@
   </div>
   <div class="row">
     <div class="col-xs-5 box">
+      <h5>Next ETA will be available in :</h5>
       <h3>
-      	<span id="timer-minutes"><%= @eta-1 %></span> minutes
-      	<span id="timer-sec">55</span> seconds
+        <span id="timer-hours"><%= @timer_hr %></span> hours
+      	<span id="timer-minutes"><%= @timer_min %></span> minutes
+      	<span id="timer-sec"><%= @timer_sec %></span> seconds
       </h3>
     </div>
   </div>
@@ -34,14 +36,24 @@
   //                        { getPolyline: true, getSteps: true }); 
       var map;
       var intl;
-     
+
       function initMap() {
-        intl = setInterval(function(){
-          if(curr_long){
-            clearInterval(intl);
-            initMapContinue();
-          }            
-        },1000);
+        <% if current_dispatcher == @location_detail.dispatcher %>
+          intl = setInterval(function(){
+            if(curr_long){
+              clearInterval(intl);
+              $('.error').html("");
+              initMapContinue();
+            }
+            else{
+              if (!in_function)
+                getLocation();
+                // $('.error').html("You have not clicked on allow button to share your location. So we can not track the current location. It will not work.")
+            }
+          },1000);
+        <% else %>
+          initMapContinue();
+        <% end %>
       }
       function initMapContinue(){
         var directionsService = new google.maps.DirectionsService;
@@ -56,15 +68,14 @@
           fullscreenControl: false,
           scrollwheel: false,
           navigationControl: false,
-          mapTypeControl: false,         
+          mapTypeControl: false,
           draggable: false,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         });
         directionsDisplay.setMap(null);
         directionsDisplay.setMap(map);
-
         directionsService.route({
-          origin: curr_lat+','+curr_long,
+          origin: '<%= @source_point %>',
           destination: '<%= @dest_point %>',
           travelMode: google.maps.TravelMode.DRIVING
         }, function(response, status) {
@@ -76,9 +87,11 @@
         });
     } 
     
-  var count_secs=10;
-	// var count_minutes='<%= @eta-1 %>'
-	var count_minutes=1;
+  var count_secs='<%= @timer_sec %>';
+	var count_hours='<%= @timer_hr %>';
+  var count_minutes='<%= @timer_min %>'
+  // var count_hours=0;
+  // var count_minutes=6;
 
   var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
@@ -87,12 +100,20 @@
     count_secs=count_secs-1;
     if (count_secs <= 0)
     {
-      count_secs = 10;
+      count_secs = 59;
       count_minutes = count_minutes-1;
       if (count_minutes >= 0)
     		$("#timer-minutes").html(count_minutes);
     }
-    if (count_minutes < 0){
+    if (count_minutes < 0)
+    {
+      count_minutes = 59;
+      $("#timer-minutes").html(count_minutes);
+      count_hours = count_hours-1;
+      if (count_hours >= 0)
+        $("#timer-hours").html(count_hours);
+    }
+    if (count_hours < 0){
     	clearInterval(counter);
     	refreshInternal();
     	return;
