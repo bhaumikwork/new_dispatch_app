@@ -1,5 +1,6 @@
 class LocationDetailsController < ApplicationController
   before_action :set_location_detail, only: [:show, :edit, :update, :destroy]
+  after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
 
   # GET /location_details
   # GET /location_details.json
@@ -118,12 +119,20 @@ class LocationDetailsController < ApplicationController
 
   def tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
-    @eta = @location_detail.eta
-    @eta_min = (@eta)%60
-    @eta_hr = (@eta)/60
-    set_timer_vars
-    logger.info"<=timer====#{@timer_hr}===#{@timer_min}====>"
+    if @location_detail.dispatcher == current_dispatcher
+      @is_display = true if @location_detail.dispatcher_refresh_count < 3
+    else
+      @is_display = true if @location_detail.receiver_refresh_count < 3
+    end
+    if @is_display
+      set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
+      @eta = @location_detail.eta
+      @eta_min = (@eta)%60
+      @eta_hr = (@eta)/60
+      set_timer_vars
+      set_refresh_count
+      logger.info"<=timer====#{@timer_hr}===#{@timer_min}====>"
+    end
   end
 
   def refresh_tracking_result
@@ -189,5 +198,12 @@ class LocationDetailsController < ApplicationController
       end
       @timer_hr = @timer_hr < 0 ? 0 : @timer_hr
       @timer_min = @timer_min < 0 ? 1 : @timer_min
+    end
+    def set_refresh_count
+      if @location_detail.dispatcher == current_dispatcher
+        @location_detail.increment!(:dispatcher_refresh_count)
+      else
+        @location_detail.increment!(:receiver_refresh_count)
+      end
     end
 end
