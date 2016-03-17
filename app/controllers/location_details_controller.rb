@@ -148,7 +148,7 @@ class LocationDetailsController < ApplicationController
     # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
     
     geteta
-    @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now)
+    @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
     set_timer_vars
     if @eta <= 2
       @location_detail.update(is_reached: true,current_eta: @eta) 
