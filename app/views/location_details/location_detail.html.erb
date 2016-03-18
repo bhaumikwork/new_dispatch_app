@@ -1,7 +1,7 @@
 <div class="row">
 	<% if @error %>
-		<div class="error">Please enter valid address.</div>
-		<%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path%>
+		<div class="error">Please allow to share your location or enter valid destination address.</div>
+		<%= link_to 'Click here to return to the Dashboard',authenticated_root_path,id: 'random_url' %>
 	<% else %>
 		<div>
 			<p>Your Location details are now being broadcast</p>
