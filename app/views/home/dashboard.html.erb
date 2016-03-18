@@ -5,6 +5,12 @@
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 <script type="text/javascript">
 	$(document).ready(function($) {
-		// getLocation();
+		getLocation();
+$(window).on("navigate", function (event, data) {
+    var direction = data.state.direction;
+    if (direction == 'back') {
+        alert('back button was pressed')
+    }
+});
 	});
 </script>

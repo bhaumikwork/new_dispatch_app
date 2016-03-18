@@ -1,5 +1,6 @@
 class LocationDetailsController < ApplicationController
   before_action :set_location_detail, only: [:show, :edit, :update, :destroy]
+  after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
 
   # GET /location_details
   # GET /location_details.json
@@ -88,7 +89,6 @@ class LocationDetailsController < ApplicationController
     # @location_detail = LocationDetail.first
     # logger.info"<=sabbb====#{@current_location.data}======>"
     # logger.info"<=sa====#{@current_location.latitude}====lll===#{@current_location.longitude}=>"
-    respond_to :js
   end
 
   def geteta
@@ -118,40 +118,54 @@ class LocationDetailsController < ApplicationController
 
   def tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
-    @eta = @location_detail.eta
-    @eta_min = (@eta)%60
-    @eta_hr = (@eta)/60
-    set_timer_vars
-    logger.info"<=timer====#{@timer_hr}===#{@timer_min}====>"
+    if @location_detail.dispatcher == current_dispatcher
+      @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
+    else
+      @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
+    end
+    if @is_display
+      set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
+      @eta = @location_detail.eta
+      @eta_min = (@eta)%60
+      @eta_hr = (@eta)/60
+      set_timer_vars
+      logger.info"<=timer====#{@timer_hr}===#{@timer_min}====>"
+    end
   end
 
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     if @location_detail.dispatcher == current_dispatcher
-      temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
-      logger.info"<==updates====#{temp}==========>"
-      logger.info"<==updates=rec===#{@location_detail.inspect}==========>"
+      @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
+    else
+      @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
     end
-    Geocoder::Configuration.timeout = 10000
-    # @current_location = Geocoder.search(request.location.ip).first
-    set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
-    # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
-    
-    # bapunagar
-    # set_source_and_dest_points(23.0333,72.6167,@location_detail.dest_lat,@location_detail.dest_long)
+    if @is_display
+      if @location_detail.dispatcher == current_dispatcher
+        temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
+        logger.info"<==updates====#{temp}==========>"
+        logger.info"<==updates=rec===#{@location_detail.inspect}==========>"
+      end
+      Geocoder::Configuration.timeout = 10000
+      # @current_location = Geocoder.search(request.location.ip).first
+      set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
+      # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
+      
+      # bapunagar
+      # set_source_and_dest_points(23.0333,72.6167,@location_detail.dest_lat,@location_detail.dest_long)
 
-    # andhajan    23.034613,72.536014
-    # set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
-    
-    #dinner bell  23.052180,72.537378
-    # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
-    
-    geteta
-    @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now)
-    set_timer_vars
-    if @eta <= 2
-      @location_detail.update(is_reached: true,current_eta: @eta) 
+      # andhajan    23.034613,72.536014
+      # set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
+      
+      #dinner bell  23.052180,72.537378
+      # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
+      
+      geteta
+      @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
+      set_timer_vars
+      if @eta <= 2
+        @location_detail.update(is_reached: true,current_eta: @eta) 
+      end
     end
     respond_to :js
   end
@@ -173,11 +187,12 @@ class LocationDetailsController < ApplicationController
       @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
     def set_timer_vars
+      logger.info"<=time====#{Time.zone}====#{Time.zone.now}=======#{@location_detail.eta_calc_time}==>"
       @timer_sec = ((Time.zone.now - @location_detail.eta_calc_time).round % 60)
-      logger.info"<=time===#{Time.zone.now}=======#{@location_detail.eta_calc_time}==>"
       logger.info"<=time diff===#{@timer_sec}=======#{Time.zone.now - @location_detail.eta_calc_time}==>"
       diff = ((Time.zone.now - @location_detail.eta_calc_time)/60).round
       @tmp_eta = @location_detail.current_eta - (diff)
+      @tmp_eta = 0 if @tmp_eta < 0
       logger.info"<=tmp eta===#{@tmp_eta}=======ll==>"
       
       @timer_hr = @tmp_eta/60 
@@ -188,5 +203,14 @@ class LocationDetailsController < ApplicationController
       end
       @timer_hr = @timer_hr < 0 ? 0 : @timer_hr
       @timer_min = @timer_min < 0 ? 1 : @timer_min
+    end
+    def set_refresh_count
+      if @location_detail.dispatcher == current_dispatcher
+        @location_detail.increment!(:dispatcher_refresh_count)
+        logger.info"<====in set refresh count===if ==>"
+      else
+        @location_detail.increment!(:receiver_refresh_count)
+        logger.info"<====in set refresh count===else ==>"
+      end
     end
 end

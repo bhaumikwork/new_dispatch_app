@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160316101104) do
+ActiveRecord::Schema.define(version: 20160317120514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,14 +47,17 @@ ActiveRecord::Schema.define(version: 20160316101104) do
     t.string   "source_long"
     t.string   "url_token"
     t.integer  "dispatcher_id"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.boolean  "is_reached",    default: false
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.boolean  "is_reached",               default: false
     t.string   "curr_lat"
     t.string   "curr_long"
     t.datetime "eta_calc_time"
     t.integer  "eta"
     t.integer  "current_eta"
+    t.integer  "receiver_refresh_count",   default: 0
+    t.integer  "dispatcher_refresh_count", default: 0
+    t.boolean  "is_terminate",             default: false
   end
 
   add_index "location_details", ["dispatcher_id"], name: "index_location_details_on_dispatcher_id", using: :btree

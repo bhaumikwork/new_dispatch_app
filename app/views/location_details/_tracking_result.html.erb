@@ -3,7 +3,8 @@
     <div class="col-xs-5 box">
       <h4>
         <%= @location_detail.dispatcher.full_name %><br>
-        ETA is currently <%= @eta_hr %> hours <%= @eta_min %> minutes
+        ETA is currently <%= @eta_hr %> hours <%= @eta_min %> minutes<br>
+        The EST time when ETA was calculated:- <%= @location_detail.eta_calc_time.strftime("%H:%M %p") %>
       </h4>
     </div>
   </div>
@@ -108,7 +109,8 @@
     if (count_minutes < 0)
     {
       count_minutes = 59;
-      $("#timer-minutes").html(count_minutes);
+      if (count_hours > 0)
+        $("#timer-minutes").html(count_minutes);
       count_hours = count_hours-1;
       if (count_hours >= 0)
         $("#timer-hours").html(count_hours);
