@@ -1,4 +1,4 @@
-<% if @is_display %>
+<%# if @is_display %>
 	<% if @error %>
 		$('#tracking-result').html('<div class="error">Please enter valid address.</div>')
 	<% else %>
@@ -9,6 +9,6 @@
 		<% end %>
 		initMap();
 	<% end %>
-<% else %>
-	$('#tracking-result').html("<%= escape_javascript(render partial:'api_limit_exceeds') %>")
-<% end %>
+<%# else %>
+//	$('#tracking-result').html("<%= escape_javascript(render partial:'api_limit_exceeds') %>")
+<%# end %>
