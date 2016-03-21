@@ -15,12 +15,18 @@
   </div>
   <div class="row">
     <div class="col-xs-5 box">
-      <h5>Next ETA will be available in :</h5>
-      <h3>
-        <span id="timer-hours"><%= @timer_hr %></span> hours
-      	<span id="timer-minutes"><%= @timer_min %></span> minutes
-      	<span id="timer-sec"><%= @timer_sec %></span> seconds
-      </h3>
+      <% if @location_detail.is_terminate %>
+        The link is terminated.
+      <% elsif @is_api_limit_exceed %>
+        You have reached the maximum number of real time updates.  Please contact support to authorize more.
+      <% else %>
+        <h5>Next ETA will be available in :</h5>
+        <h3>
+          <span id="timer-hours"><%= @timer_hr %></span> hours
+        	<span id="timer-minutes"><%= @timer_min %></span> minutes
+        	<span id="timer-sec"><%= @timer_sec %></span> seconds
+        </h3>
+      <% end %>
     </div>
   </div>
 </center>
@@ -87,49 +93,50 @@
           }
         });
     } 
-    
-  var count_secs='<%= @timer_sec %>';
-	var count_hours='<%= @timer_hr %>';
-  var count_minutes='<%= @timer_min %>'
-  // var count_hours=0;
-  // var count_minutes=6;
+  <% if !@location_detail.is_terminate && !@is_api_limit_exceed %>
+    var count_secs='<%= @timer_sec %>';
+  	var count_hours='<%= @timer_hr %>';
+    var count_minutes='<%= @timer_min %>'
+    // var count_hours=0;
+    // var count_minutes=6;
 
-  var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+    var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
-  function timer()
-  {
-    count_secs=count_secs-1;
-    if (count_secs <= 0)
+    function timer()
     {
-      count_secs = 59;
-      count_minutes = count_minutes-1;
-      if (count_minutes >= 0)
-    		$("#timer-minutes").html(count_minutes);
+      count_secs=count_secs-1;
+      if (count_secs <= 0)
+      {
+        count_secs = 59;
+        count_minutes = count_minutes-1;
+        if (count_minutes >= 0)
+      		$("#timer-minutes").html(count_minutes);
+      }
+      if (count_minutes < 0)
+      {
+        count_minutes = 59;
+        if (count_hours > 0)
+          $("#timer-minutes").html(count_minutes);
+        count_hours = count_hours-1;
+        if (count_hours >= 0)
+          $("#timer-hours").html(count_hours);
+      }
+      if (count_hours < 0){
+      	clearInterval(counter);
+      	refreshInternal();
+      	return;
+      }
+      $("#timer-sec").html(count_secs);
     }
-    if (count_minutes < 0)
-    {
-      count_minutes = 59;
-      if (count_hours > 0)
-        $("#timer-minutes").html(count_minutes);
-      count_hours = count_hours-1;
-      if (count_hours >= 0)
-        $("#timer-hours").html(count_hours);
+    function refreshInternal(){
+      $.ajax({
+          url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
+          type: 'get',
+          data: {curr_lat: curr_lat,curr_long: curr_long},
+          success: function (data) {
+            data
+          }
+        });
     }
-    if (count_hours < 0){
-    	clearInterval(counter);
-    	refreshInternal();
-    	return;
-    }
-    $("#timer-sec").html(count_secs);
-  }
-  function refreshInternal(){
-    $.ajax({
-        url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
-        type: 'get',
-        data: {curr_lat: curr_lat,curr_long: curr_long},
-        success: function (data) {
-          data
-        }
-      });
-  }
+  <% end %>
 </script>

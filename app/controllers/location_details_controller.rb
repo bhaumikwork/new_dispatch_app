@@ -118,48 +118,39 @@ class LocationDetailsController < ApplicationController
 
   def tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    if @location_detail.dispatcher == current_dispatcher
-      @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
-    else
-      @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
-    end
-    if @is_display
+    @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
+    # if @location_detail.dispatcher == current_dispatcher
+      # @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
+    # else
+    #   # @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
+    #   @is_display = true if !@location_detail.is_terminate
+    # end
+    # if @is_display
       set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
       @eta = @location_detail.eta
       @eta_min = (@eta)%60
       @eta_hr = (@eta)/60
       set_timer_vars
       logger.info"<=timer====#{@timer_hr}===#{@timer_min}====>"
-    end
+    # end
   end
 
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    if @location_detail.dispatcher == current_dispatcher
-      @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
-    else
-      # @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
-      @is_display = true if !@location_detail.is_terminate
-    end
-    if @is_display
+    @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
+    # if @location_detail.dispatcher == current_dispatcher
+      # @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
+    # else
+    #   # @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
+    #   @is_display = true if !@location_detail.is_terminate
+    # end
+    # if @is_display
       if @location_detail.dispatcher == current_dispatcher
         temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
         logger.info"<==updates====#{temp}==========>"
         logger.info"<==updates=rec===#{@location_detail.inspect}==========>"
       end
-      Geocoder::Configuration.timeout = 10000
-      # @current_location = Geocoder.search(request.location.ip).first
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
-      # set_source_and_dest_points(@current_location.latitude,@current_location.longitude,@location_detail.dest_lat,@location_detail.dest_long)
-      
-      # bapunagar
-      # set_source_and_dest_points(23.0333,72.6167,@location_detail.dest_lat,@location_detail.dest_long)
-
-      # andhajan    23.034613,72.536014
-      # set_source_and_dest_points(23.034613,72.536014,@location_detail.dest_lat,@location_detail.dest_long)
-      
-      #dinner bell  23.052180,72.537378
-      # set_source_and_dest_points(23.052180,72.537378,@location_detail.dest_lat,@location_detail.dest_long)
       
       geteta
       @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
@@ -167,7 +158,7 @@ class LocationDetailsController < ApplicationController
       if @eta <= 2
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
-    end
+    # end
     respond_to :js
   end
 
@@ -207,7 +198,7 @@ class LocationDetailsController < ApplicationController
 
       @timer_secs = (@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time).round
       if @timer_secs <= 0
-        @is_display = false
+        # @is_display = false
         @location_detail.update(is_terminate:true)
       else
         @timer_sec = @timer_secs % 60

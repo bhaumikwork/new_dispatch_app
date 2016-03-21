@@ -7,11 +7,11 @@
 	<% if @location_detail.is_reached %>
 		<%= render partial: 'reached_to_destination' %>
 	<% else %>
-		<% if @is_display %>
+		<%# if @is_display %>
 			<%= render partial: 'tracking_result' %>
-		<% else %>
-			<%= render partial: 'api_limit_exceeds' %>
-		<% end %>
+		<%# else %>
+			<%#= render partial: 'api_limit_exceeds' %>
+		<%# end %>
 	<% end %>
 </div>
 <script type="text/javascript">
