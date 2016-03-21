@@ -1,6 +1,6 @@
 <center>
   <div class="row">
-    <div class="col-xs-5 box">
+    <div class="col-xs-12 col-md-5 box">
       <h4>
         <%= @location_detail.dispatcher.full_name %><br>
         ETA is currently <%= @eta_hr %> hours <%= @eta_min %> minutes<br>
@@ -9,12 +9,12 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-5 box">
+    <div class="col-xs-12 col-md-5 box">
       <div id="map" style="width: 460 px; height: 300px"></div> 
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-5 box">
+    <div class="col-xs-12 col-md-5 box">
       <% if @location_detail.is_terminate %>
         The link is terminated.
       <% elsif @is_api_limit_exceed %>
