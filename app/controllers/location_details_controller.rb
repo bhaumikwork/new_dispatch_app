@@ -187,22 +187,34 @@ class LocationDetailsController < ApplicationController
       @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
     def set_timer_vars
-      logger.info"<=time====#{Time.zone}====#{Time.zone.now}=======#{@location_detail.eta_calc_time}==>"
-      @timer_sec = ((Time.zone.now - @location_detail.eta_calc_time).round % 60)
-      logger.info"<=time diff===#{@timer_sec}=======#{Time.zone.now - @location_detail.eta_calc_time}==>"
-      diff = ((Time.zone.now - @location_detail.eta_calc_time)/60).round
-      @tmp_eta = @location_detail.current_eta - (diff)
-      @tmp_eta = 0 if @tmp_eta < 0
-      logger.info"<=tmp eta===#{@tmp_eta}=======ll==>"
+      # logger.info"<=time====#{Time.zone}====#{Time.zone.now}=======#{@location_detail.eta_calc_time}==>"
+      # @timer_sec = ((Time.zone.now - @location_detail.eta_calc_time).round % 60)
+      # logger.info"<=time diff===#{@timer_sec}=======#{Time.zone.now - @location_detail.eta_calc_time}==>"
+      # diff = ((Time.zone.now - @location_detail.eta_calc_time)/60).round
+      # @tmp_eta = @location_detail.current_eta - (diff)
+      # @tmp_eta = 0 if @tmp_eta < 0
+      # logger.info"<=tmp eta===#{@tmp_eta}=======ll==>"
       
-      @timer_hr = @tmp_eta/60 
-      @timer_min = @tmp_eta%60
-      unless diff > 0 
-        @timer_sec = 55
-        @timer_min = @timer_min-1 unless @tmp_eta < @location_detail.current_eta
+      # @timer_hr = @tmp_eta/60 
+      # @timer_min = @tmp_eta%60
+      # unless diff > 0 
+      #   @timer_sec = 55
+      #   @timer_min = @timer_min-1 unless @tmp_eta < @location_detail.current_eta
+      # end
+      # @timer_hr = @timer_hr < 0 ? 0 : @timer_hr
+      # @timer_min = @timer_min < 0 ? 1 : @timer_min
+
+      @timer_secs = (@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time).round
+      if @timer_secs <= 0
+        @is_display = false
+        @location_detail.update(is_terminate:true)
+      else
+        @timer_sec = @timer_secs % 60
+        @timer_min = ((@timer_secs-@timer_sec)%3600)/60
+        @timer_hr = @timer_secs/3600
       end
-      @timer_hr = @timer_hr < 0 ? 0 : @timer_hr
-      @timer_min = @timer_min < 0 ? 1 : @timer_min
+
+
     end
     def set_refresh_count
       if @location_detail.dispatcher == current_dispatcher
