@@ -144,7 +144,7 @@ class LocationDetailsController < ApplicationController
     #   # @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
     #   @is_display = true if !@location_detail.is_terminate
     # end
-    # if @is_display
+    if !@is_api_limit_exceed
       if @location_detail.dispatcher == current_dispatcher
         temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
         logger.info"<==updates====#{temp}==========>"
@@ -154,11 +154,11 @@ class LocationDetailsController < ApplicationController
       
       geteta
       @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
-      set_timer_vars
       if @eta <= 2
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
-    # end
+    end
+    set_timer_vars
     respond_to :js
   end
 
