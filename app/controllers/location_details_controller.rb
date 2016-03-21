@@ -138,7 +138,8 @@ class LocationDetailsController < ApplicationController
     if @location_detail.dispatcher == current_dispatcher
       @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
     else
-      @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
+      # @is_display = true if @location_detail.receiver_refresh_count < 3 && !@location_detail.is_terminate
+      @is_display = true if !@location_detail.is_terminate
     end
     if @is_display
       if @location_detail.dispatcher == current_dispatcher
@@ -221,7 +222,7 @@ class LocationDetailsController < ApplicationController
         @location_detail.increment!(:dispatcher_refresh_count)
         logger.info"<====in set refresh count===if ==>"
       else
-        @location_detail.increment!(:receiver_refresh_count)
+        # @location_detail.increment!(:receiver_refresh_count)
         logger.info"<====in set refresh count===else ==>"
       end
     end
