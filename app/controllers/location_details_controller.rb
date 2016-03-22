@@ -63,7 +63,6 @@ class LocationDetailsController < ApplicationController
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
     set_timer_vars
-    exit
   end
 
   def refresh_tracking_result
