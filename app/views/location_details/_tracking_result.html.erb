@@ -147,6 +147,8 @@
         });
     }
   <% else %>
-    $("#next-eta-box").html("The link is terminated.");
+    <% if @is_terminate %>
+      $("#next-eta-box").html("The link is terminated.");
+    <% end %>
   <% end %>
 </script>
