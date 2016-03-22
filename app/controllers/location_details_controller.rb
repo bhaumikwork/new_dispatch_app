@@ -140,7 +140,11 @@ class LocationDetailsController < ApplicationController
 
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
+    if @location_detail.dispatcher == current_dispatcher
+      @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
+    else
+      @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
+    end
     # if @location_detail.dispatcher == current_dispatcher
       # @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
     # else
