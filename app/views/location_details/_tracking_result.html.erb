@@ -87,12 +87,8 @@
     var currenttime = new Date();
     var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
 
-    console.log(currenttime - eta_calc_time);
     diff_in_sec = Math.ceil((currenttime - eta_calc_time)/1000) - 2
     var timer_seconds = "<%= @location_detail.current_eta*60 %>" - diff_in_sec;
-    console.log(diff_in_sec);
-    console.log(currenttime);
-    console.log(diff_in_sec);
     if (timer_seconds > "<%= @location_detail.current_eta*60 %>" || timer_seconds < 0 ) {
       timer_seconds = "<%= @location_detail.current_eta*60 %>";
     }
