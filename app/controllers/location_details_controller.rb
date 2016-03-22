@@ -59,7 +59,7 @@ class LocationDetailsController < ApplicationController
     @eta = @location_detail.eta
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
-    set_timer_vars
+    set_terminate_var
   end
 
   def refresh_tracking_result
@@ -80,7 +80,7 @@ class LocationDetailsController < ApplicationController
       if @eta <= $eta_time
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
-      set_timer_vars
+      set_terminate_var
     else
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     end
@@ -94,7 +94,7 @@ class LocationDetailsController < ApplicationController
       @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
 
-    def set_timer_vars
+    def set_terminate_var
       if Time.zone.now > (@location_detail.eta_calc_time + @location_detail.current_eta.minutes)
         @is_terminate = true
       end
