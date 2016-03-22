@@ -118,7 +118,11 @@ class LocationDetailsController < ApplicationController
 
   def tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
+    if @location_detail.dispatcher == current_dispatcher
+      @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
+    else
+      @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
+    end
     # if @location_detail.dispatcher == current_dispatcher
       # @is_display = true if @location_detail.dispatcher_refresh_count < 3 && !@location_detail.is_terminate
     # else
@@ -131,7 +135,6 @@ class LocationDetailsController < ApplicationController
       @eta_min = (@eta)%60
       @eta_hr = (@eta)/60
       set_timer_vars
-      logger.info"<=timer====#{@timer_hr}===#{@timer_min}====>"
     # end
   end
 
@@ -157,8 +160,10 @@ class LocationDetailsController < ApplicationController
       if @eta <= 2
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
+      set_timer_vars
+    else
+      set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     end
-    set_timer_vars
     respond_to :js
   end
 
