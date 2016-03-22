@@ -87,7 +87,7 @@
     diff_in_sec = Math.round((currenttime - eta_calc_time)/1000)
     var timer_seconds = "<%= @location_detail.current_eta*60 %>" - diff_in_sec;
     console.log("<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%s %z") %>");
-    if (timer_seconds > "<%= @location_detail.current_eta*60 %>" ) {
+    if (timer_seconds > "<%= @location_detail.current_eta*60 %>" || timer_seconds < 0 ) {
       timer_seconds = "<%= @location_detail.current_eta*60 %>";
     }
     var count_secs=timer_seconds%60;
