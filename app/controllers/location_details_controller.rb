@@ -87,7 +87,6 @@ class LocationDetailsController < ApplicationController
       end
       set_timer_vars
     else
-      @is_terminate = true
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     end
     respond_to :js
