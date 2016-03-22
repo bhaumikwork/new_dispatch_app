@@ -101,6 +101,6 @@ class LocationDetailsController < ApplicationController
     end
 
     def set_refresh_count
-      @location_detail.increment!(:dispatcher_refresh_count)
+      @location_detail.increment!(:dispatcher_refresh_count) if @location_detail.dispatcher == current_dispatcher
     end
 end
