@@ -22,92 +22,80 @@
       <% else %>
         <h5>Next ETA will be available in :</h5>
         <h3>
-          <span id="timer-hours"><%#= @timer_hr %></span> hours
-        	<span id="timer-minutes"><%#= @timer_min %></span> minutes
-        	<span id="timer-sec"><%#= @timer_sec %></span> seconds
+          <span id="timer-hours"></span> hours
+        	<span id="timer-minutes"></span> minutes
+        	<span id="timer-sec"></span> seconds
         </h3>
       <% end %>
     </div>
   </div>
 </center>
 <script type="text/javascript">
-  // var map = new GMap2(document.getElementById("map"));
-  // var directions = new GDirections(map);
-  // var isCreateHeadPoint = true;
-  // var headMarker, tailMarker;
-  // // sets map center
-  // map.setCenter(new GLatLng(23.03, +72.61), 12);
-  // // sets direction polyline
-  // console.log("from:<%= @source_point %> to:<%= @dest_point %>");
-  // directions.load("from:<%= @source_point %> to:<%= @dest_point %>", 
-  //                        { getPolyline: true, getSteps: true }); 
-      var map;
-      var intl;
-
-      function initMap() {
-        <% if current_dispatcher == @location_detail.dispatcher %>
-          intl = setInterval(function(){
-            if(curr_long){
-              clearInterval(intl);
-              $('.error').html("");
-              initMapContinue();
-            }
-            else{
-              if (!in_function)
-                getLocation();
-                // $('.error').html("You have not clicked on allow button to share your location. So we can not track the current location. It will not work.")
-            }
-          },1000);
-        <% else %>
+  var map;
+  var intl;
+  function initMap() {
+    <% if current_dispatcher == @location_detail.dispatcher %>
+      intl = setInterval(function(){
+        if(curr_long){
+          clearInterval(intl);
+          $('.error').html("");
           initMapContinue();
-        <% end %>
+        }
+        else{
+          if (!in_function)
+            getLocation();
+        }
+      },1000);
+    <% else %>
+      initMapContinue();
+    <% end %>
+  }
+  function initMapContinue(){
+    var directionsService = new google.maps.DirectionsService;
+    var directionsDisplay = new google.maps.DirectionsRenderer;
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 16,
+      zoomControl: false,
+      mapTypeControl: false,
+      scaleControl: false,
+      streetViewControl: false,
+      rotateControl: false,
+      fullscreenControl: false,
+      scrollwheel: false,
+      navigationControl: false,
+      mapTypeControl: false,
+      draggable: false,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+    directionsDisplay.setMap(null);
+    directionsDisplay.setMap(map);
+    directionsService.route({
+      origin: '<%= @source_point %>',
+      destination: '<%= @dest_point %>',
+      travelMode: google.maps.TravelMode.DRIVING
+    }, function(response, status) {
+      if (status === google.maps.DirectionsStatus.OK) {
+        directionsDisplay.setDirections(response);
+      } else {
+        window.alert('Directions request failed due to ' + status);
       }
-      function initMapContinue(){
-        var directionsService = new google.maps.DirectionsService;
-        var directionsDisplay = new google.maps.DirectionsRenderer;
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 16,
-          zoomControl: false,
-          mapTypeControl: false,
-          scaleControl: false,
-          streetViewControl: false,
-          rotateControl: false,
-          fullscreenControl: false,
-          scrollwheel: false,
-          navigationControl: false,
-          mapTypeControl: false,
-          draggable: false,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        });
-        directionsDisplay.setMap(null);
-        directionsDisplay.setMap(map);
-        directionsService.route({
-          origin: '<%= @source_point %>',
-          destination: '<%= @dest_point %>',
-          travelMode: google.maps.TravelMode.DRIVING
-        }, function(response, status) {
-          if (status === google.maps.DirectionsStatus.OK) {
-            directionsDisplay.setDirections(response);
-          } else {
-            window.alert('Directions request failed due to ' + status);
-          }
-        });
-    } 
+    });
+  } 
   <% if !@is_terminate && !@is_api_limit_exceed %>
     var currenttime = new Date();
     var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>')
     diff_in_sec = Math.round((currenttime - eta_calc_time)/1000)
     var timer_seconds = "<%= @location_detail.current_eta*60 %>" - diff_in_sec;
     console.log("<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%s %z") %>");
+    if (timer_seconds > "<%= @location_detail.current_eta*60 %>" ) {
+      timer_seconds = "<%= @location_detail.current_eta*60 %>";
+    }
     var count_secs=timer_seconds%60;
     var count_minutes=((timer_seconds-count_secs)%3600)/60;
   	var count_hours=Math.round(timer_seconds/3600);
     $("#timer-minutes").html(count_minutes);
     $("#timer-hours").html(count_hours);
     $("#timer-sec").html(count_secs);
-    // var count_hours=0;
-    // var count_minutes=6;
-
     var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
     function timer()

@@ -94,29 +94,19 @@ class LocationDetailsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_location_detail
-      @location_detail = LocationDetail.find(params[:id])
-    end
-
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def location_detail_params
-      params.require(:location_detail).permit(:dest_lat, :dest_long, :source_lat, :source_long, :eta, :url_token, :dispatcher_id,:curr_lat,:curr_long)
-    end
     #set source and dest lat-long
     def set_source_and_dest_points(source_lat,source_long,dest_lat,dest_long)
       @source_point = source_lat.to_s+","+source_long.to_s
       logger.info"<===spoint=====#{@source_point}======>"
       @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
+
     def set_timer_vars
-      @timer_secs = (@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time).round
-      if @timer_secs <= 0
+      if Time.zone.now > (@location_detail.eta_calc_time + @location_detail.current_eta.minutes)
         @is_terminate = true
       end
-
-
     end
+
     def set_refresh_count
       if @location_detail.dispatcher == current_dispatcher
         @location_detail.increment!(:dispatcher_refresh_count)
