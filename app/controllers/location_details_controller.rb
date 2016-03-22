@@ -208,7 +208,7 @@ class LocationDetailsController < ApplicationController
       @timer_secs = (@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time).round
       if @timer_secs <= 0
         # @is_display = false
-        @location_detail.update(is_terminate:true)
+        # @location_detail.update(is_terminate:true) if @timer_secs <= 0
       else
         @timer_sec = @timer_secs % 60
         @timer_min = ((@timer_secs-@timer_sec)%3600)/60

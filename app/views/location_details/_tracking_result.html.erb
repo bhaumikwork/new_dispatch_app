@@ -14,7 +14,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12 col-md-5 box">
+    <div class="col-xs-12 col-md-5 box" id="next-eta-box">
       <% if @location_detail.is_terminate %>
         The link is terminated.
       <% elsif @is_api_limit_exceed %>
@@ -22,9 +22,9 @@
       <% else %>
         <h5>Next ETA will be available in :</h5>
         <h3>
-          <span id="timer-hours"><%= @timer_hr %></span> hours
-        	<span id="timer-minutes"><%= @timer_min %></span> minutes
-        	<span id="timer-sec"><%= @timer_sec %></span> seconds
+          <span id="timer-hours"><%#= @timer_hr %></span> hours
+        	<span id="timer-minutes"><%#= @timer_min %></span> minutes
+        	<span id="timer-sec"><%#= @timer_sec %></span> seconds
         </h3>
       <% end %>
     </div>
@@ -93,10 +93,18 @@
           }
         });
     } 
-  <% if !@location_detail.is_terminate && !@is_api_limit_exceed %>
-    var count_secs='<%= @timer_sec %>';
-  	var count_hours='<%= @timer_hr %>';
-    var count_minutes='<%= @timer_min %>'
+  <% if @timer_secs > 0 && !@is_api_limit_exceed %>
+    var currenttime = new Date();
+    var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>')
+    diff_in_sec = Math.round((currenttime - eta_calc_time)/1000)
+    var timer_seconds = "<%= @location_detail.current_eta*60 %>" - diff_in_sec;
+    console.log("<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%s %z") %>");
+    var count_secs=timer_seconds%60;
+    var count_minutes=((timer_seconds-count_secs)%3600)/60;
+  	var count_hours=Math.round(timer_seconds/3600);
+    $("#timer-minutes").html(count_minutes);
+    $("#timer-hours").html(count_hours);
+    $("#timer-sec").html(count_secs);
     // var count_hours=0;
     // var count_minutes=6;
 
@@ -138,5 +146,7 @@
           }
         });
     }
+  <% else %>
+    $("#next-eta-box").html("The link is terminated.");
   <% end %>
 </script>
