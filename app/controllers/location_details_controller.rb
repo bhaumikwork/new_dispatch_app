@@ -1,6 +1,6 @@
 class LocationDetailsController < ApplicationController
   after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
-  @@eta_time=1
+  $eta_time=1
 
   def location_detail_popup
     respond_to :js
@@ -82,7 +82,7 @@ class LocationDetailsController < ApplicationController
       
       geteta
       @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
-      if @eta <= @@eta_time
+      if @eta <= $eta_time
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
       set_timer_vars
