@@ -1,6 +1,6 @@
 class LocationDetailsController < ApplicationController
   after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
-  $eta_time=1
+  $eta_time=2
 
   def location_detail_popup
     respond_to :js
@@ -28,7 +28,6 @@ class LocationDetailsController < ApplicationController
 
   def geteta
     url = URI("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=#{@source_point}&destinations=#{@dest_point}")
-    logger.info"<=url====#{url}======>"
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -38,7 +37,6 @@ class LocationDetailsController < ApplicationController
     response = http.request(request)
     @response = response.read_body
     @response = Hash.from_xml(@response)
-    logger.info"<=eta response====#{@response}======>"
     @error = false
     if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
       @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
@@ -48,7 +46,6 @@ class LocationDetailsController < ApplicationController
     else
       @error = true
     end
-    logger.info"<=eta====#{@eta}======>"
   end
 
   def tracking_result
@@ -75,8 +72,6 @@ class LocationDetailsController < ApplicationController
     if !@is_api_limit_exceed
       if @location_detail.dispatcher == current_dispatcher
         temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
-        logger.info"<==updates====#{temp}==========>"
-        logger.info"<==updates=rec===#{@location_detail.inspect}==========>"
       end
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
       
@@ -93,10 +88,9 @@ class LocationDetailsController < ApplicationController
   end
 
   private
-    #set source and dest lat-long
+    #set source and dest lat-long for map
     def set_source_and_dest_points(source_lat,source_long,dest_lat,dest_long)
       @source_point = source_lat.to_s+","+source_long.to_s
-      logger.info"<===spoint=====#{@source_point}======>"
       @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
 
@@ -107,12 +101,6 @@ class LocationDetailsController < ApplicationController
     end
 
     def set_refresh_count
-      if @location_detail.dispatcher == current_dispatcher
-        @location_detail.increment!(:dispatcher_refresh_count)
-        logger.info"<====in set refresh count===if ==>"
-      else
-        # @location_detail.increment!(:receiver_refresh_count)
-        logger.info"<====in set refresh count===else ==>"
-      end
+      @location_detail.increment!(:dispatcher_refresh_count)
     end
 end
