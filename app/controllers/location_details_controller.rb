@@ -51,8 +51,10 @@ class LocationDetailsController < ApplicationController
   def tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     if @location_detail.dispatcher == current_dispatcher
+      @time_variation = 0
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
+      @time_variation = 2
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
@@ -65,8 +67,10 @@ class LocationDetailsController < ApplicationController
   def refresh_tracking_result
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     if @location_detail.dispatcher == current_dispatcher
+      @time_variation = 0
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
+      @time_variation = 2
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     if !@is_api_limit_exceed
