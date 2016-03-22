@@ -93,7 +93,7 @@
           }
         });
     } 
-  <% if @timer_secs > 0 && !@is_api_limit_exceed %>
+  <% if !@is_terminate && !@is_api_limit_exceed %>
     var currenttime = new Date();
     var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>')
     diff_in_sec = Math.round((currenttime - eta_calc_time)/1000)

@@ -166,6 +166,7 @@ class LocationDetailsController < ApplicationController
       end
       set_timer_vars
     else
+      @is_terminate = true
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     end
     respond_to :js
@@ -207,12 +208,13 @@ class LocationDetailsController < ApplicationController
 
       @timer_secs = (@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time).round
       if @timer_secs <= 0
+        @is_terminate = true
         # @is_display = false
         # @location_detail.update(is_terminate:true) if @timer_secs <= 0
-      else
-        @timer_sec = @timer_secs % 60
-        @timer_min = ((@timer_secs-@timer_sec)%3600)/60
-        @timer_hr = @timer_secs/3600
+      # else
+      #   @timer_sec = @timer_secs % 60
+      #   @timer_min = ((@timer_secs-@timer_sec)%3600)/60
+      #   @timer_hr = @timer_secs/3600
       end
 
 
