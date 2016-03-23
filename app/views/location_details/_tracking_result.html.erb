@@ -9,9 +9,9 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12 col-md-5 box iframe">
-    <!-- <div id="map" style="width: 460 px; height: 300px"></div> 
-    </div> -->
+    <div id="map" class="col-xs-12 col-md-5 box">
+      <%= image_tag("/location_detail/"+@location_detail.url_token+".png") %>
+    </div>
   </div>
   <div class="row">
     <div class="col-xs-12 col-md-5 box" id="next-eta-box">
@@ -31,63 +31,6 @@
   </div>
 </center>
 <script type="text/javascript">
-  var iframe = document.createElement("iframe");
-  iframe.onload = function() {
-    var doc = iframe.contentDocument;
-    iframe.setAttribute('style',"width: 500px; height: 320px");
-    iframe.contentWindow.showNewMap = function() {
-      var mapContainer =  doc.createElement('div');
-      mapContainer.setAttribute('style',"width: 460px; height: 300px; pointer-events:none");
-      mapContainer.setAttribute('id','map')
-      doc.body.appendChild(mapContainer);
-
-      var directionsService = new google.maps.DirectionsService;
-      var directionsDisplay = new google.maps.DirectionsRenderer;
-      var map = new google.maps.Map(mapContainer, {
-        zoom: 16,
-        zoomControl: false,
-        mapTypeControl: false,
-        scaleControl: false,
-        streetViewControl: false,
-        rotateControl: false,
-        fullscreenControl: false,
-        scrollwheel: false,
-        navigationControl: false,
-        mapTypeControl: false,
-        draggable: false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      });
-      directionsDisplay.setMap(null);
-      directionsDisplay.setMap(map);
-      directionsService.route({
-        origin: '<%= @source_point %>',
-        destination: '<%= @dest_point %>',
-        travelMode: google.maps.TravelMode.DRIVING
-      }, function(response, status) {
-        if (status === google.maps.DirectionsStatus.OK) {
-          directionsDisplay.setDirections(response);
-        } else {
-          window.alert('Directions request failed due to ' + status);
-        }
-      });
-    }
-      // var map = new this.google.maps.Map(mapContainer,mapOptions);
-
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&' + 'callback=showNewMap';
-    iframe.contentDocument.getElementsByTagName('head')[0].appendChild(script);
-  };
-$(".iframe").html(iframe);
-</script>
-<script type="text/javascript">
-  
-// Web Address (URL) of the page to capture
-"use strict";
-console.log('Hello, world!');
-phantom.exit();
-
-
 
   <% if !@is_terminate && !@is_api_limit_exceed %>
     var currenttime = new Date();
