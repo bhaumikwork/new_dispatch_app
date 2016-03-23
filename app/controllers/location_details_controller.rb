@@ -62,7 +62,7 @@ class LocationDetailsController < ApplicationController
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
     set_terminate_var
-    `heroku run bash|node_modules/phantomjs/bin/phantomjs screen_capture.js "#{params[:url_token]}"`
+    exec('node_modules/phantomjs/bin/phantomjs screen_capture.js "#{params[:url_token]}"')
     logger.info"<====cmd run====>"
   end
 
