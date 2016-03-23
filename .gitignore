@@ -12,4 +12,4 @@
 /log/*
 !/log/.keep
 /tmp
-/public/location_detail
+/public/assets/*.png
