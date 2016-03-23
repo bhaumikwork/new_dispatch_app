@@ -90,6 +90,11 @@ class LocationDetailsController < ApplicationController
     end
     respond_to :js
   end
+  def load_map
+    @location_detail = LocationDetail.find_by_url_token(params[:url_token])
+    set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
+    set_terminate_var
+  end
 
   private
     #set source and dest lat-long for map

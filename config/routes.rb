@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   # resources :location_details
   get 'location_detail_popup' => 'location_details#location_detail_popup'
   get 'tracking_result/:url_token' => 'location_details#tracking_result',as: :tracking_result
+  get 'load_map/:url_token' => 'location_details#load_map',as: :load_map
   get 'refresh_tracking_result/:url_token' => 'location_details#refresh_tracking_result',as: :refresh_tracking_result
   post 'location_detail' => 'location_details#location_detail', as: :'location_detail_resolve'
   # The priority is based upon order of creation: first created -> highest priority.

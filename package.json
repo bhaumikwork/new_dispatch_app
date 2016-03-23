@@ -1,0 +1,25 @@
+{
+  "name": "dispatch_app",
+  "version": "1.0.0",
+  "description": "== README",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/volmcommander/dispatch_app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/volmcommander/dispatch_app/issues"
+  },
+  "homepage": "https://github.com/volmcommander/dispatch_app#readme",
+  "dependencies": {
+    "phantomjs": "^2.1.3"
+  }
+}
