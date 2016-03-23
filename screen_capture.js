@@ -6,7 +6,8 @@ console.log(args[1]);
 page.open('http://dispatcher-stagging.herokuapp.com/load_map/'+args[1], function() {
 // page.open('http://dispatcher-stagging.herokuapp.com/load_map/blfi7', function() {
 
-  page.render('public/assets/'+args[1]+'.png');
+  page.render('./public/assets/'+args[1]+'.png');
+  console.log("image generated at ",'./public/assets/'+args[1]+'.png');
   phantom.exit();
 });
 
