@@ -29,6 +29,13 @@
       <% end %>
     </div>
   </div>
+  <div class="row">
+    <div class="col-xs-12 col-md-5">
+      <% if dispatcher_signed_in? %>
+        <h4><%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token) %></h4>
+      <% end %>
+    </div>
+  </div>
 </center>
 <script type="text/javascript">
   var map;
