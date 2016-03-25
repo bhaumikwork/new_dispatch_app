@@ -80,7 +80,7 @@ class LocationDetailsController < ApplicationController
     request["content-type"] = 'application/json'
     request["cache-control"] = 'no-cache'
     request["postman-token"] = '9b9ce2cf-d2b6-bc51-d496-75b224f6351e'
-    request.body = "{\n    \"address\": \"http://google.co.in\"\n}"
+    request.body = "{\n    \"address\": \"http://dispatcher-stagging.herokuapp.com/load_map/flzc3\"\n}"
 
     response = http.request(request)
     logger.info"=====#{response.read_body}========="
