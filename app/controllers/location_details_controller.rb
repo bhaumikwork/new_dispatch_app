@@ -72,12 +72,14 @@ class LocationDetailsController < ApplicationController
     # url = URI("http://127.0.0.1:4000/screenshot")
 
     http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     request = Net::HTTP::Post.new(url)
     request["content-type"] = 'application/json'
     request["cache-control"] = 'no-cache'
     request["postman-token"] = '9b9ce2cf-d2b6-bc51-d496-75b224f6351e'
-    request.body = "{\n    \"address\": \"http://google.co.in\"\n}"#data
+    request.body = "{\n    \"address\": \"http://google.co.in\"\n}"
 
     response = http.request(request)
     logger.info"=====#{response.read_body}========="
