@@ -1,1 +1,0 @@
-web: node phantomjs_server/web.js
