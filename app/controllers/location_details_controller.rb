@@ -63,7 +63,7 @@ class LocationDetailsController < ApplicationController
     @eta_hr = (@eta)/60
     set_terminate_var
     logger.info"node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}"
-    logger.info exec("node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}")
+    # logger.info exec("node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}")
     logger.info"<====cmd run====>"
   end
 
