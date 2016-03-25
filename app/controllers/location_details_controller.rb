@@ -38,6 +38,7 @@ class LocationDetailsController < ApplicationController
     @response = response.read_body
     @response = Hash.from_xml(@response)
     @error = false
+    logger.info"========#{@response}============="
     if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
       @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
       @eta = @eta.round
