@@ -62,23 +62,25 @@ class LocationDetailsController < ApplicationController
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
     set_terminate_var
-    logger.info"node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}"
     # logger.info exec("node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}")
-    logger.info"<====cmd run====>"
+    map_url = URI.encode(load_map_url(params[:url_token]))
+    data = {"address": map_url}.to_json
+    logger.info"<====cmd run=address=#{data}===>"
 
     url = URI("https://phantomss.herokuapp.com/screenshot")
-    map_url = URI.encode(load_map_url(params[:url_token]))
+  
+    # url = URI("http://127.0.0.1:4000/screenshot")
+
     http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     request = Net::HTTP::Post.new(url)
+    request["content-type"] = 'application/json'
     request["cache-control"] = 'no-cache'
-    request["postman-token"] = '3dd4a83c-3379-bfa5-977e-a6b7c9280df1'
-    request["content-type"] = 'application/x-www-form-urlencoded'
-    request.body = "address=#{map_url}"
+    request["postman-token"] = '9b9ce2cf-d2b6-bc51-d496-75b224f6351e'
+    request.body = "{\n    \"address\": \"http://google.co.in\"\n}"#data
 
     response = http.request(request)
+    logger.info"=====#{response.read_body}========="
     res = JSON.parse response.read_body
     @location_detail.update(image_url: res["url"])
 
