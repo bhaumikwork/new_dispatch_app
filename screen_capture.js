@@ -10,7 +10,7 @@ try {
 		// console.log(clipRect);
 		page.clipRect = {
 	    top: 14,
-		  left: 4,
+		  left: 3,
 		  width: 390,
 		  height: 500
 		};

@@ -11,6 +11,11 @@
 	$(document).ready(function($) {
 		initMap();
 	});
+	<% if !dispatcher_signed_in? %>
+		window.onbeforeunload = function () {
+	    return 'The following action will cause you to lose all displayed data...are you sure you wish to continue?';
+	  }
+	<% end %>
 </script>
 <style>
 .box{
