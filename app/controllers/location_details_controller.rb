@@ -67,7 +67,7 @@ class LocationDetailsController < ApplicationController
     logger.info"<====cmd run====>"
 
     url = URI("https://phantomss.herokuapp.com/screenshot")
-
+    map_url = URI.encode(load_map_url(params[:url_token]))
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -76,10 +76,11 @@ class LocationDetailsController < ApplicationController
     request["cache-control"] = 'no-cache'
     request["postman-token"] = '3dd4a83c-3379-bfa5-977e-a6b7c9280df1'
     request["content-type"] = 'application/x-www-form-urlencoded'
-    request.body = "address=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Faws-sdk"
+    request.body = "address=#{map_url}"
 
     response = http.request(request)
-    logger.info"====imge generated============#{response.read_body}===================="
+    res = JSON.parse response.read_body
+    @location_detail.update(image_url: res["url"])
 
   end
 
@@ -113,6 +114,7 @@ class LocationDetailsController < ApplicationController
     @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
     set_terminate_var
+    # render layout: false
   end
 
   private
