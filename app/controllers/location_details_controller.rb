@@ -65,6 +65,22 @@ class LocationDetailsController < ApplicationController
     logger.info"node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}"
     # logger.info exec("node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}")
     logger.info"<====cmd run====>"
+
+    url = URI("https://phantomss.herokuapp.com/screenshot")
+
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+    request = Net::HTTP::Post.new(url)
+    request["cache-control"] = 'no-cache'
+    request["postman-token"] = '3dd4a83c-3379-bfa5-977e-a6b7c9280df1'
+    request["content-type"] = 'application/x-www-form-urlencoded'
+    request.body = "address=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Faws-sdk"
+
+    response = http.request(request)
+    logger.info"====imge generated============#{response.read_body}===================="
+
   end
 
   def refresh_tracking_result
