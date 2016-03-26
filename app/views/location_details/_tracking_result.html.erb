@@ -43,7 +43,7 @@
   <% if !@is_terminate && !@is_api_limit_exceed %>
     var currenttime = new Date();
     var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
-    diff_in_sec = Math.ceil((currenttime - eta_calc_time)/1000) - "<%= @time_variation %>"
+    diff_in_sec = Math.ceil((currenttime - eta_calc_time)/1000)
     if (diff_in_sec < 0){
       var timer_seconds = "<%= @location_detail.current_eta*60 %>";  
     }else{
@@ -88,7 +88,8 @@
       $("#timer-sec").html(count_secs);
     }
     function refreshInternal(){
-      $.ajax({
+      setTimeout(function(){
+        $.ajax({
           url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
           type: 'get',
           data: {curr_lat: curr_lat,curr_long: curr_long},
@@ -96,6 +97,7 @@
             data
           }
         });
+      },"<%= @time_variation %>");
     }
   <% else %>
     <% if @is_terminate %>
