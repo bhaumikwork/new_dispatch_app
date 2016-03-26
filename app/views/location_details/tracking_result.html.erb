@@ -17,6 +17,13 @@
 	  }
 	<% end %>
 </script>
+<% unless dispatcher_signed_in? %>
+	<script type="text/javascript">
+	   window.onbeforeunload = function () {
+	    return ' The following action will cause you to lose all displayed data...are you sure you wish to continue?';
+	  }
+	</script>
+<% end %>
 <style>
 .box{
 	border: 1px solid;

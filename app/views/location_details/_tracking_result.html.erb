@@ -30,6 +30,13 @@
       <% end %>
     </div>
   </div>
+  <div class="row">
+    <div class="col-xs-12 col-md-5">
+      <% if dispatcher_signed_in? %>
+        <h4><%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token) %></h4>
+      <% end %>
+    </div>
+  </div>
 </center>
 <script type="text/javascript">
 
@@ -37,7 +44,12 @@
     var currenttime = new Date();
     var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
     diff_in_sec = Math.ceil((currenttime - eta_calc_time)/1000) - "<%= @time_variation %>"
-    var timer_seconds = "<%= @location_detail.current_eta*60 %>" - diff_in_sec;
+    if (diff_in_sec < 0){
+      var timer_seconds = "<%= @location_detail.current_eta*60 %>";  
+    }else{
+      var timer_seconds = "<%= @location_detail.current_eta*60 %>" - diff_in_sec;  
+    }
+    
     if (timer_seconds > "<%= @location_detail.current_eta*60 %>" || timer_seconds < 0 ) {
       timer_seconds = "<%= @location_detail.current_eta*60 %>";
     }

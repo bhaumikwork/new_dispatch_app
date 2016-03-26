@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(version: 20160325115923) do
     t.string   "dest_long"
     t.string   "source_lat"
     t.string   "source_long"
+    t.integer  "eta"
     t.string   "url_token"
     t.integer  "dispatcher_id"
     t.datetime "created_at",                               null: false
@@ -53,7 +54,6 @@ ActiveRecord::Schema.define(version: 20160325115923) do
     t.string   "curr_lat"
     t.string   "curr_long"
     t.datetime "eta_calc_time"
-    t.integer  "eta"
     t.integer  "current_eta"
     t.integer  "receiver_refresh_count",   default: 0
     t.integer  "dispatcher_refresh_count", default: 0

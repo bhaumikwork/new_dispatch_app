@@ -1,5 +1,6 @@
 class LocationDetailsController < ApplicationController
   after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
+
   $eta_time=2
 
   def location_detail_popup
@@ -110,7 +111,7 @@ class LocationDetailsController < ApplicationController
       if @eta <= $eta_time
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
-      set_terminate_var
+      # set_terminate_var
     else
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     end

@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery.validate
 //= require turbolinks
 //= require_tree .
 	var curr_lat;
