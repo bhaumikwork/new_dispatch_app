@@ -63,7 +63,7 @@ class LocationDetailsController < ApplicationController
     @eta = @location_detail.eta
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
-    set_terminate_var
+    # set_terminate_var
     # logger.info exec("node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}")
     if @location_detail.dispatcher == current_dispatcher
       map_url = URI.encode(load_map_url(params[:url_token]))
