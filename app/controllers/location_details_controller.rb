@@ -79,7 +79,6 @@ class LocationDetailsController < ApplicationController
 
     request = Net::HTTP::Post.new(url)
     request["content-type"] = 'application/json'
-    # request.body = "{\n    \"address\": \"http://dispatcher-stagging.herokuapp.com/load_map/0sfwk\"\n}"
     request.body = data
 
     response = http.request(request)
