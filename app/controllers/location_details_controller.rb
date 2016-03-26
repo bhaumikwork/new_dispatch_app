@@ -85,11 +85,13 @@ class LocationDetailsController < ApplicationController
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
       
       geteta
-      @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
+      if @location_detail.dispatcher == current_dispatcher && !@error
+        @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) 
+        refresh_image
+      end
       if @eta <= $eta_time
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
-      refresh_image
       # set_terminate_var
     else
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
