@@ -64,27 +64,29 @@ class LocationDetailsController < ApplicationController
     @eta_hr = (@eta)/60
     set_terminate_var
     # logger.info exec("node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}")
-    map_url = URI.encode(load_map_url(params[:url_token]))
-    data = {"start": @source_point,"end": @dest_point}.to_json
+    if @location_detail.dispatcher == current_dispatcher
+      map_url = URI.encode(load_map_url(params[:url_token]))
+      data = {"start": @source_point,"end": @dest_point}.to_json
 
-    logger.info"<====cmd run=address=#{data}===>"
+      logger.info"<====cmd run=address=#{data}===>"
 
-    url = URI("https://phantomss.herokuapp.com/screenshot")
-  
-    # url = URI("http://127.0.0.1:4000/screenshot")
+      # url = URI("https://phantomss.herokuapp.com/screenshot")
+    
+      url = URI("http://127.0.0.1:4000/screenshot")
 
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      http = Net::HTTP.new(url.host, url.port)
+      # http.use_ssl = true
+      # http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-    request = Net::HTTP::Post.new(url)
-    request["content-type"] = 'application/json'
-    request.body = data
+      request = Net::HTTP::Post.new(url)
+      request["content-type"] = 'application/json'
+      request.body = data
 
-    response = http.request(request)
-    logger.info"=====#{response.read_body}========="
-    res = JSON.parse response.read_body
-    @location_detail.update(image_url: res["url"])
+      response = http.request(request)
+      logger.info"=====#{response.read_body}========="
+      res = JSON.parse response.read_body
+      @location_detail.update(image_url: res["url"])
+    end
 
   end
 
