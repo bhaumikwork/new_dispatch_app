@@ -56,7 +56,7 @@ class LocationDetailsController < ApplicationController
       @time_variation = 0
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
-      @time_variation = 2000
+      @time_variation = 10000
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
@@ -65,29 +65,7 @@ class LocationDetailsController < ApplicationController
     @eta_hr = (@eta)/60
     # set_terminate_var
     # logger.info exec("node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}")
-    if @location_detail.dispatcher == current_dispatcher
-      map_url = URI.encode(load_map_url(params[:url_token]))
-      data = {"start": @source_point,"end": @dest_point}.to_json
-
-      logger.info"<====cmd run=address=#{data}===>"
-
-      # url = URI(ENV["phantomJs_url"])
-      url = URI("https://phantomss.herokuapp.com/screenshot")
-      # url = URI("http://127.0.0.1:4000/screenshot")
-
-      http = Net::HTTP.new(url.host, url.port)
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-
-      request = Net::HTTP::Post.new(url)
-      request["content-type"] = 'application/json'
-      request.body = data
-
-      response = http.request(request)
-      logger.info"=====#{response.read_body}========="
-      res = JSON.parse response.read_body
-      @location_detail.update(image_url: res["url"])
-    end
+    refresh_image
 
   end
 
@@ -97,7 +75,7 @@ class LocationDetailsController < ApplicationController
       @time_variation = 0
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
-      @time_variation = 2000
+      @time_variation = 10000
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     if !@is_api_limit_exceed
@@ -111,6 +89,7 @@ class LocationDetailsController < ApplicationController
       if @eta <= $eta_time
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
+      refresh_image
       # set_terminate_var
     else
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
@@ -126,6 +105,31 @@ class LocationDetailsController < ApplicationController
 
   private
     #set source and dest lat-long for map
+    def refresh_image
+      if @location_detail.dispatcher == current_dispatcher
+        map_url = URI.encode(load_map_url(params[:url_token]))
+        data = {"start": @source_point,"end": @dest_point}.to_json
+
+        logger.info"<====cmd run=address=#{data}===>"
+
+        # url = URI(ENV["phantomJs_url"])
+        url = URI("https://phantomss.herokuapp.com/screenshot")
+        # url = URI("http://127.0.0.1:4000/screenshot")
+
+        http = Net::HTTP.new(url.host, url.port)
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+        request = Net::HTTP::Post.new(url)
+        request["content-type"] = 'application/json'
+        request.body = data
+
+        response = http.request(request)
+        logger.info"=====#{response.read_body}========="
+        res = JSON.parse response.read_body
+        @location_detail.update(image_url: res["url"])
+      end
+    end
     def set_source_and_dest_points(source_lat,source_long,dest_lat,dest_long)
       @source_point = source_lat.to_s+","+source_long.to_s
       @dest_point= dest_lat.to_s+","+dest_long.to_s

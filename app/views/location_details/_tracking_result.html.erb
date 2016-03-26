@@ -11,7 +11,7 @@
   <div class="row">
     <div id="map" class="col-xs-12 col-md-5 box">
     <%#= @location_detail.image_url %>
-      <%= image_tag(@location_detail.image_url,size: "460x345") %>
+      <%= image_tag(@location_detail.image_url,class:"img-responsive") %>
     </div>
   </div>
   <div class="row">
@@ -33,13 +33,16 @@
   <div class="row">
     <div class="col-xs-12 col-md-5">
       <% if dispatcher_signed_in? %>
-        <h4><%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token) %></h4>
+        <h4><%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token), data: { no_turbolink: true } %></h4>
       <% end %>
     </div>
   </div>
 </center>
 <script type="text/javascript">
-
+  window.onbeforeunload = function () {
+    return 'The following action will cause you to lose all displayed data...are you sure you wish to continue?';
+  }
+  
   <% if !@is_terminate && !@is_api_limit_exceed %>
     var currenttime = new Date();
     var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
@@ -88,6 +91,7 @@
       $("#timer-sec").html(count_secs);
     }
     function refreshInternal(){
+      $("#next-eta-box").html("Refreshing...");
       setTimeout(function(){
         $.ajax({
           url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
