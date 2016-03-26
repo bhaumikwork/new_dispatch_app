@@ -65,7 +65,8 @@ class LocationDetailsController < ApplicationController
     set_terminate_var
     # logger.info exec("node_modules/phantomjs/bin/phantomjs screen_capture.js #{params[:url_token]}")
     map_url = URI.encode(load_map_url(params[:url_token]))
-    data = {"address": map_url}.to_json
+    data = {"start": @source_point,"end": @dest_point}.to_json
+
     logger.info"<====cmd run=address=#{data}===>"
 
     url = URI("https://phantomss.herokuapp.com/screenshot")
@@ -78,9 +79,8 @@ class LocationDetailsController < ApplicationController
 
     request = Net::HTTP::Post.new(url)
     request["content-type"] = 'application/json'
-    request["cache-control"] = 'no-cache'
-    request["postman-token"] = '9b9ce2cf-d2b6-bc51-d496-75b224f6351e'
-    request.body = "{\n    \"address\": \"http://dispatcher-stagging.herokuapp.com/load_map/flzc3\"\n}"
+    # request.body = "{\n    \"address\": \"http://dispatcher-stagging.herokuapp.com/load_map/0sfwk\"\n}"
+    request.body = data
 
     response = http.request(request)
     logger.info"=====#{response.read_body}========="
