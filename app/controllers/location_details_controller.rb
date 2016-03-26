@@ -70,13 +70,13 @@ class LocationDetailsController < ApplicationController
 
       logger.info"<====cmd run=address=#{data}===>"
 
-      # url = URI("https://phantomss.herokuapp.com/screenshot")
+      url = URI("https://phantomss.herokuapp.com/screenshot")
     
-      url = URI("http://127.0.0.1:4000/screenshot")
+      # url = URI("http://127.0.0.1:4000/screenshot")
 
       http = Net::HTTP.new(url.host, url.port)
-      # http.use_ssl = true
-      # http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
       request = Net::HTTP::Post.new(url)
       request["content-type"] = 'application/json'
