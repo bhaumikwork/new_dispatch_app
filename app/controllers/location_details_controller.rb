@@ -56,7 +56,7 @@ class LocationDetailsController < ApplicationController
       @time_variation = 0
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
-      @time_variation = 2
+      @time_variation = 2000
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
@@ -71,8 +71,8 @@ class LocationDetailsController < ApplicationController
 
       logger.info"<====cmd run=address=#{data}===>"
 
-      url = URI(ENV["phantomJs_url"])
-      # url = URI("https://phantomss.herokuapp.com/screenshot")
+      # url = URI(ENV["phantomJs_url"])
+      url = URI("https://phantomss.herokuapp.com/screenshot")
       # url = URI("http://127.0.0.1:4000/screenshot")
 
       http = Net::HTTP.new(url.host, url.port)
@@ -97,7 +97,7 @@ class LocationDetailsController < ApplicationController
       @time_variation = 0
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
-      @time_variation = 2
+      @time_variation = 2000
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     if !@is_api_limit_exceed
