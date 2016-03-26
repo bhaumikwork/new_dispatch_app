@@ -71,8 +71,8 @@ class LocationDetailsController < ApplicationController
 
       logger.info"<====cmd run=address=#{data}===>"
 
-      url = URI("https://phantomss.herokuapp.com/screenshot")
-    
+      url = URI(ENV["phantomJs_url"])
+      # url = URI("https://phantomss.herokuapp.com/screenshot")
       # url = URI("http://127.0.0.1:4000/screenshot")
 
       http = Net::HTTP.new(url.host, url.port)
