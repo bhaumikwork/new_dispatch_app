@@ -79,7 +79,7 @@ class LocationDetailsController < ApplicationController
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     if !@is_api_limit_exceed
-      if @location_detail.dispatcher == current_dispatcher
+      if @location_detail.dispatcher == current_dispatcher && params[:curr_lat].present? && params[:curr_long].present?
         temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
       end
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
