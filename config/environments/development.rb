@@ -53,4 +53,7 @@ Rails.application.configure do
     :password => "gauravgarg",
     :enable_starttls_auto => true
   }
+
+  #set url of node server used for grabing Screen Shot
+  ENV["phantomJs_url"] = "https://phantomss.herokuapp.com/screenshot"
 end

@@ -9,7 +9,6 @@ Rails.application.routes.draw do
       root :to => "home#home", as: :unauthenticated_root
     end
   end
-  # resources :location_details
   get 'location_detail_popup' => 'location_details#location_detail_popup'
   get 'tracking_result/:url_token' => 'location_details#tracking_result',as: :tracking_result
   get 'refresh_tracking_result/:url_token' => 'location_details#refresh_tracking_result',as: :refresh_tracking_result

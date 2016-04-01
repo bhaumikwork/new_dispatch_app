@@ -63,7 +63,7 @@ Rails.application.configure do
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_url_options = { host: 'dispacher.herokuapp.com' }
+  config.action_mailer.default_url_options = { host: 'dispatcher-stagging.herokuapp.com' }
   config.action_mailer.perform_deliveries = true 
   ActionMailer::Base.delivery_method = :smtp
 
@@ -89,4 +89,6 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+  #set url of node server used for grabing Screen Shot
+  ENV["phantomJs_url"] = "https://phantomss.herokuapp.com/screenshot"
 end

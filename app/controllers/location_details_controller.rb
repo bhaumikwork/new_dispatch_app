@@ -1,11 +1,18 @@
 class LocationDetailsController < ApplicationController
+  before_action :set_location_detail,only: [:tracking_result,:refresh_tracking_result]
+  before_action :check_link_generator,only: [:tracking_result,:refresh_tracking_result]
   after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
+  after_action :check_link_generator,only: [:set_location_detail]
 
+  #if eta less then this time then we consider as reached
   $eta_time=2
 
+  # just opens a popup for taking destination address
   def location_detail_popup
     respond_to :js
   end
+  
+  # based on source and destination generatos random link
   def location_detail
     query = params[:address]
     Geocoder::Configuration.timeout = 10000
@@ -27,65 +34,45 @@ class LocationDetailsController < ApplicationController
     end
   end
 
-  def geteta
-    url = URI("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=#{@source_point}&destinations=#{@dest_point}")
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-
-    request = Net::HTTP::Get.new(url)
-
-    response = http.request(request)
-    @response = response.read_body
-    @response = Hash.from_xml(@response)
-    @error = false
-    if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
-      @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
-      @eta = @eta.round
-      @eta_min = (@eta)%60
-      @eta_hr = (@eta)/60
-    else
-      @error = true
-    end
-  end
-
+  # generates image and dispalay it.
   def tracking_result
-    @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    if @location_detail.dispatcher == current_dispatcher
+    if @link_generator
       @time_variation = 0
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
-      @time_variation = 2
+      @time_variation = 10000
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
     @eta = @location_detail.eta
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
-    set_terminate_var
+    refresh_image
   end
 
+  # At timer ends this will refresh tracking results 
   def refresh_tracking_result
-    @location_detail = LocationDetail.find_by_url_token(params[:url_token])
-    if @location_detail.dispatcher == current_dispatcher
+    if @link_generator
       @time_variation = 0
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
-      @time_variation = 2
+      @time_variation = 10000
       @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     if !@is_api_limit_exceed
-      if @location_detail.dispatcher == current_dispatcher
-        temp = @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
+      if @link_generator && params[:curr_lat].present? && params[:curr_long].present?
+        @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
       end
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
       
       geteta
-      @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) if @location_detail.dispatcher == current_dispatcher
+      if @link_generator && !@error
+        @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) 
+        refresh_image
+      end
       if @eta <= $eta_time
         @location_detail.update(is_reached: true,current_eta: @eta) 
       end
-      # set_terminate_var
     else
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     end
@@ -93,19 +80,67 @@ class LocationDetailsController < ApplicationController
   end
 
   private
+    #will set location detail
+    def set_location_detail
+      @location_detail = LocationDetail.find_by_url_token(params[:url_token])
+    end
+
+    # calls distancematrix api with source-destination points and get ETA 
+    def geteta
+      url = URI("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=#{@source_point}&destinations=#{@dest_point}")
+      http = Net::HTTP.new(url.host, url.port)
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+      request = Net::HTTP::Get.new(url)
+
+      response = http.request(request)
+      @response = response.read_body
+      @response = Hash.from_xml(@response)
+      @error = false
+      if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
+        @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
+        @eta = @eta.round
+        @eta_min = (@eta)%60
+        @eta_hr = (@eta)/60
+      else
+        @error = true
+      end
+    end
     #set source and dest lat-long for map
+    def refresh_image
+      if @link_generator && !@is_api_limit_exceed
+        data = {"start": @source_point,"end": @dest_point}.to_json
+
+        url = URI(ENV["phantomJs_url"])
+
+        http = Net::HTTP.new(url.host, url.port)
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+        request = Net::HTTP::Post.new(url)
+        request["content-type"] = 'application/json'
+        request.body = data
+
+        response = http.request(request)
+        res = JSON.parse response.read_body
+        @location_detail.update(image_url: res["url"])
+      end
+    end
+    
+    #sets source and destination point as a string
     def set_source_and_dest_points(source_lat,source_long,dest_lat,dest_long)
       @source_point = source_lat.to_s+","+source_long.to_s
       @dest_point= dest_lat.to_s+","+dest_long.to_s
     end
 
-    def set_terminate_var
-      if Time.zone.now > (@location_detail.eta_calc_time + @location_detail.current_eta.minutes)
-        @is_terminate = true
-      end
-    end
-
+    #increase refresh count on refresh 
     def set_refresh_count
-      @location_detail.increment!(:dispatcher_refresh_count) if @location_detail.dispatcher == current_dispatcher
+      @location_detail.increment!(:dispatcher_refresh_count) if @link_generator
+    end
+    
+    #check current_dispatcher is generator of @location_detail or not
+    def check_link_generator
+      @link_generator = @location_detail.dispatcher == current_dispatcher ? true : false
     end
 end

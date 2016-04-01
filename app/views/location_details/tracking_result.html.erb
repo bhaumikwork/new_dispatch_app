@@ -8,22 +8,15 @@
 	<% end %>
 </div>
 <script type="text/javascript">
-	$(document).ready(function($) {
-		initMap();
-	});
+  
+	<% if dispatcher_signed_in? %>
+		getLocation();
+	<% end %>
 </script>
-<% unless dispatcher_signed_in? %>
-	<script type="text/javascript">
-	   window.onbeforeunload = function () {
-	    return ' The following action will cause you to lose all displayed data...are you sure you wish to continue?';
-	  }
-	</script>
-<% end %>
 <style>
 .box{
 	border: 1px solid;
 	border-color: black;
-	margin:5px;
 	padding: 5px;
 }
 #map {

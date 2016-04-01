@@ -1,23 +1,6 @@
 $modal = $('.modal');
 $modal.html('<%= escape_javascript(render partial: "location_detail") %>');
-$('#tracking-url').html('');
-hid_curr_lat = "<input type='hidden' id='curr_lat' name='curr_lat'>"
-hid_curr_long = "<input type='hidden' id='curr_long' name='curr_long'>"
-function fill_lat_long(){
-	$('#curr_lat').val(curr_lat);
-	$('#curr_long').val(curr_long);
-}
-
 $modal.modal();
-$('#location_detail').append(hid_curr_lat);
-$('#location_detail').append(hid_curr_long);
-fill_lat_long();
-// jQuery.validator.addMethod("lettersonly", function(value, element) {
-//  return this.optional(element) || /^[a-z]+$/i.test(value);
-//}, "Letters only please"); 
-$('#location_detail').validate({
-          rules:{
-            street_address:{lettersonly:true}
-          }
-          });
+$('#curr_lat').val(curr_lat);
+$('#curr_long').val(curr_long);
 $("#address").geocomplete();
