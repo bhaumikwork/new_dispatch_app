@@ -55,5 +55,5 @@ Rails.application.configure do
   }
 
   #set url of node server used for grabing Screen Shot
-  ENV["phantomJs_url"] = "http://127.0.0.1:4000/screenshot"
+  ENV["phantomJs_url"] = "https://phantomss.herokuapp.com/screenshot"
 end

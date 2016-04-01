@@ -1,49 +1,46 @@
-<center>
-  <div class="row">
-    <div class="col-xs-12 col-md-5 box">
-      <h4>
-        <%= @location_detail.dispatcher.full_name %><br>
-        ETA is currently <%= @eta_hr %> hours <%= @eta_min %> minutes<br>
-        The EST time when ETA was calculated:- <%= @location_detail.eta_calc_time.strftime("%H:%M %p") %>
-      </h4>
-    </div>
+<div class="row">
+  <div class="col-xs-12 col-md-5 box">
+    <h4>
+      <%= @location_detail.dispatcher.full_name %><br>
+      ETA is currently <%= @eta_hr %> hours <%= @eta_min %> minutes<br>
+      The EST time when ETA was calculated:- <%= @location_detail.eta_calc_time.strftime("%H:%M %p") %>
+    </h4>
   </div>
-  <div class="row">
-    <div id="map" class="col-xs-12 col-md-5 box">
-    <%#= @location_detail.image_url %>
-      <%= image_tag(@location_detail.image_url,class:"img-responsive") %>
-    </div>
+</div>
+<div class="row">
+  <div id="map" class="col-xs-12 col-md-5 box">
+    <%= image_tag(@location_detail.image_url,class:"img-responsive") %>
   </div>
-  <div class="row">
-    <div class="col-xs-12 col-md-5 box" id="next-eta-box">
-      <% if @location_detail.is_terminate %>
-        The link is terminated.
-      <% elsif @is_api_limit_exceed %>
-        You have reached the maximum number of real time updates.  Please contact support to authorize more.
-      <% else %>
-        <h5>Next ETA will be available in :</h5>
-        <h3>
-          <span id="timer-hours"></span> hours
-        	<span id="timer-minutes"></span> minutes
-        	<span id="timer-sec"></span> seconds
-        </h3>
-      <% end %>
-    </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-md-5 box" id="next-eta-box">
+    <% if @location_detail.is_terminate %>
+      The link is terminated.
+    <% elsif @is_api_limit_exceed %>
+      You have reached the maximum number of real time updates.  Please contact support to authorize more.
+    <% else %>
+      <h5>Next ETA will be available in :</h5>
+      <h3>
+        <span id="timer-hours"></span> hours
+      	<span id="timer-minutes"></span> minutes
+      	<span id="timer-sec"></span> seconds
+      </h3>
+    <% end %>
   </div>
+</div>
+<% if @link_generator %>
   <div class="row">
     <div class="col-xs-12 col-md-5">
-      <% if dispatcher_signed_in? %>
         <h4><%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token), data: { no_turbolink: true } %></h4>
-      <% end %>
     </div>
   </div>
-</center>
+<% end %>
 <script type="text/javascript">
   window.onbeforeunload = function () {
     return 'The following action will cause you to lose all displayed data...are you sure you wish to continue?';
   }
   
-  <% if !@is_terminate && !@is_api_limit_exceed %>
+  <% if !@is_api_limit_exceed %>
     var currenttime = new Date();
     var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
     diff_in_sec = Math.ceil((currenttime - eta_calc_time)/1000)
@@ -103,9 +100,5 @@
         });
       },<%= @time_variation %>);
     }
-  <% else %>
-    <% if @is_terminate %>
-      $("#next-eta-box").html("The link is terminated.");
-    <% end %>
   <% end %>
 </script>
