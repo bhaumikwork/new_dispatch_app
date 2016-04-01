@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160325115923) do
+ActiveRecord::Schema.define(version: 20160401100738) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,7 +45,6 @@ ActiveRecord::Schema.define(version: 20160325115923) do
     t.string   "dest_long"
     t.string   "source_lat"
     t.string   "source_long"
-    t.integer  "eta"
     t.string   "url_token"
     t.integer  "dispatcher_id"
     t.datetime "created_at",                               null: false
@@ -54,8 +53,8 @@ ActiveRecord::Schema.define(version: 20160325115923) do
     t.string   "curr_lat"
     t.string   "curr_long"
     t.datetime "eta_calc_time"
+    t.integer  "eta"
     t.integer  "current_eta"
-    t.integer  "receiver_refresh_count",   default: 0
     t.integer  "dispatcher_refresh_count", default: 0
     t.boolean  "is_terminate",             default: false
     t.string   "image_url"
