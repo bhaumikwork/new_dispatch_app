@@ -57,7 +57,7 @@
     }
     var count_secs=timer_seconds%60;
     var count_minutes=((timer_seconds-count_secs)%3600)/60;
-  	var count_hours=Math.round(timer_seconds/3600);
+  	var count_hours=Math.floor(timer_seconds/3600);
     $("#timer-minutes").html(count_minutes);
     $("#timer-hours").html(count_hours);
     $("#timer-sec").html(count_secs);
