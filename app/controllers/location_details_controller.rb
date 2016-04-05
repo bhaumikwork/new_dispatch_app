@@ -106,6 +106,7 @@ class LocationDetailsController < ApplicationController
       else
         @error = true
       end
+      logger.info"<=====response===========#{@response.inspect}===============>"
     end
     #set source and dest lat-long for map
     def refresh_image
