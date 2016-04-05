@@ -1,6 +1,6 @@
 $modal = $('.modal');
 $modal.html('<%= escape_javascript(render partial: "location_detail") %>');
-$modal.modal();
 $('#curr_lat').val(curr_lat);
 $('#curr_long').val(curr_long);
+$modal.modal();
 $("#address").geocomplete();

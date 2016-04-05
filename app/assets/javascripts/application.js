@@ -20,19 +20,18 @@
 	var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
 	function showPosition(position) {
 		console.log(position.coords);
-		console.log('sank');
 		curr_lat = position.coords.latitude;
 		curr_long = position.coords.longitude;
 	}
 	function getLocation() {
     if (navigator.geolocation) {
-    	console.log('in geo');
+    	console.log('in geolocation');
     	navigator.geolocation.watchPosition(showPosition,positionError,options);
     } else {
        alert("Geolocation is not supported by this browser.");
     }
 	}
 	function positionError() {
-		console.log("errorrrrrrrr");
+		console.log("error");
     $('.error').html('You have not clicked on allow button to share your location. So we can not track the current location. It will not work.')
 	}
