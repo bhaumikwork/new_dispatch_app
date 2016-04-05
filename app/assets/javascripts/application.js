@@ -20,7 +20,7 @@
 	var options = { enableHighAccuracy: true, maximumAge: 100, timeout: 60000 };
 	function showPosition(position) {
 		console.log(position.coords);
-		console.log('sank')
+		console.log('sank');
 		curr_lat = position.coords.latitude;
 		curr_long = position.coords.longitude;
 	}
@@ -33,6 +33,6 @@
     }
 	}
 	function positionError() {
-		console.log("errorrrrrrrr")
+		console.log("errorrrrrrrr");
     $('.error').html('You have not clicked on allow button to share your location. So we can not track the current location. It will not work.')
 	}
