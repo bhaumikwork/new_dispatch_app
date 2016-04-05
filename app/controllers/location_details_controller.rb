@@ -17,6 +17,7 @@ class LocationDetailsController < ApplicationController
     query = params[:address]
     Geocoder::Configuration.timeout = 10000
     @dest_location = Geocoder.search(query).first
+    logger.info"<====================#{@dest_location.inspect}=========================>"
     set_source_and_dest_points(params[:curr_lat],params[:curr_long],@dest_location.latitude,@dest_location.longitude)
     geteta
     unless @error
