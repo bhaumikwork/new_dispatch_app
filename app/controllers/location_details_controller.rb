@@ -32,6 +32,17 @@ class LocationDetailsController < ApplicationController
         eta_calc_time:Time.zone.now,
         current_eta:@eta
       )
+      # @location_detail = current_dispatcher.location_details.create(
+      #   source_lat:"41.8151927",
+      #   source_long:"-88.3885907",
+      #   dest_lat:"41.78677589999999",
+      #   dest_long:"-87.7521884",
+      #   eta:@eta,
+      #   curr_lat:"41.8151927",
+      #   curr_long:"-88.3885907",
+      #   eta_calc_time:Time.zone.now,
+      #   current_eta:@eta
+      # )
     end
   end
 
@@ -49,6 +60,7 @@ class LocationDetailsController < ApplicationController
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
     refresh_image
+
   end
 
   # At timer ends this will refresh tracking results 
@@ -126,7 +138,11 @@ class LocationDetailsController < ApplicationController
 
         response = http.request(request)
         res = JSON.parse response.read_body
+        logger.info"<===url=======#{res["url"]}===============>"
         @location_detail.update(image_url: res["url"])
+        unless @location_detail.image_url.present?
+          redirect_to tracking_result_path
+        end
       end
     end
     
