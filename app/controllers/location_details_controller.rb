@@ -32,17 +32,6 @@ class LocationDetailsController < ApplicationController
         eta_calc_time:Time.zone.now,
         current_eta:@eta
       )
-      # @location_detail = current_dispatcher.location_details.create(
-      #   source_lat:"41.8151927",
-      #   source_long:"-88.3885907",
-      #   dest_lat:"41.78677589999999",
-      #   dest_long:"-87.7521884",
-      #   eta:@eta,
-      #   curr_lat:"41.8151927",
-      #   curr_long:"-88.3885907",
-      #   eta_calc_time:Time.zone.now,
-      #   current_eta:@eta
-      # )
     end
   end
 
