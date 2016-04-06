@@ -35,20 +35,22 @@
           <h4><%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token), data: { no_turbolink: true } %></h4>
       </div>
     </div>
-    <div class="row">
-      <div class="col-xs-12 col-md-5">
-        <h3>Backend processing Log</h3>
+    <% unless @location_detail.is_terminate || @is_api_limit_exceed %>
+      <div class="row">
+        <div class="col-xs-12 col-md-5">
+          <h3>Backend processing Log</h3>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-12 col-md-5 text-left">
-      <% if @res.present? %>
-        <% @res.each do |key,val| %>
-          <%= "#{key} : #{val}" %><br><br>
+      <div class="row">
+        <div class="col-xs-12 col-md-5 text-left">
+        <% if @res.present? %>
+          <% @res.each do |key,val| %>
+            <%= "#{key} : #{val}" %><br><br>
+          <% end %>
         <% end %>
-      <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
   <% end %>
 </center>
 <script type="text/javascript">
