@@ -91,4 +91,10 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
   #set url of node server used for grabing Screen Shot
   ENV["phantomJs_url"] = "https://phantomss.herokuapp.com/screenshot"
+  Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :email => {
+    :email_prefix => "Dispatch error ",
+    :sender_address => %{"notifier" <notifier@example.com>},
+    :exception_recipients => %w{sanket.tps@gmail.com}
+  }
 end
