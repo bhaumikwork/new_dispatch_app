@@ -49,7 +49,6 @@ class LocationDetailsController < ApplicationController
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
     refresh_image
-
   end
 
   # At timer ends this will refresh tracking results 
@@ -126,15 +125,9 @@ class LocationDetailsController < ApplicationController
         request.body = data
 
         response = http.request(request)
-        @res = JSON.parse response.read_body
-        logger.info"<===url=======#{@res}===============>"
-        logger.info"<===url=======#{@res["url"]}===============>"
-        if @location_detail.update(image_url: @res["url"])
-          @res[5] = "Url updated in database"
-        else
-          @res[5] = "Url not updated in database"
-        end
-        @res[6] = "Url from database #{@location_detail.image_url}"
+        res = JSON.parse response.read_body
+        logger.info"<=====res===========#{res.inspect}===============>"
+        @location_detail.update(image_url: res["url"])
       end
     end
     
