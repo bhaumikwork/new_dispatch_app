@@ -1,8 +1,10 @@
-<% if dispatcher_signed_in? %>
-	<%= link_to 'Sign Out',destroy_dispatcher_session_path,method: :delete,class: 'pull-right' %>
-	<span class="pull-right">
-		<%= current_dispatcher.name %> | 
-	</span>
-<% else %>
-	<%= link_to 'Sign In',new_dispatcher_session_path,class: 'pull-right' %>
+<% unless params[:action] == "tracking_result" && !dispatcher_signed_in? %>
+	<% if dispatcher_signed_in? %>
+		<%= link_to 'Sign Out',destroy_dispatcher_session_path,method: :delete,class: 'pull-right' %>
+		<span class="pull-right">
+			<%= current_dispatcher.name %> | 
+		</span>
+	<% else %>
+		<%= link_to 'Sign In',new_dispatcher_session_path,class: 'pull-right' %>
+	<% end %>
 <% end %>
