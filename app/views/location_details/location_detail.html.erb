@@ -1,16 +1,17 @@
 <div class="row">
-	<% if @error %>
-		<div class="error">Please allow to share your location or enter valid destination address.</div>
-		<%= link_to 'Click here to return to the Dashboard',authenticated_root_path,id: 'random_url' %>
-	<% else %>
-		<div>
-			<p>Your Location details are now being broadcast</p>
-			<p>This is the URL you can share:</p>
-			<%= link_to tracking_result_url(@location_detail.url_token),tracking_result_path(@location_detail.url_token),id: 'random_url', target: "_blank" %><br><br>
-			<%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token) %>
-				
-		</div>
-	<% end %>
+  <% if @error %>
+    <div class="error">Please allow to share your location or enter valid destination address.</div>
+    <%= link_to 'Click here to return to the Dashboard',authenticated_root_path,id: 'random_url' %>
+  <% else %>
+    <div>
+      <p> Step 1. Click here to activate the link.</p><br>
+      <p>Step 2. Share following URL with receiver. <br>
+      <%= link_to tracking_result_url(@location_detail.url_token),tracking_result_path(@location_detail.url_token),id: 'random_url', target: "_blank" %></p>
+      <br>
+      <%= link_to 'Click here to terminate tracking and return to the Dashboard',authenticated_root_path(url_token: @location_detail.url_token) %>
+        
+    </div>
+  <% end %>
 </div>
 <script type="text/javascript">
   window.onbeforeunload = function () {
