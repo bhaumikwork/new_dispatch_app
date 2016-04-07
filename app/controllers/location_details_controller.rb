@@ -126,6 +126,7 @@ class LocationDetailsController < ApplicationController
 
         response = http.request(request)
         res = JSON.parse response.read_body
+        logger.info"<=====res===========#{res.inspect}===============>"
         @location_detail.update(image_url: res["url"])
       end
     end
