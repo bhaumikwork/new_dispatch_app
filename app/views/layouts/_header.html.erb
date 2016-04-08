@@ -1,4 +1,4 @@
-<% unless params[:action] == "tracking_result" && !dispatcher_signed_in? && !@link_generator %>
+<% unless params[:action] == "tracking_result" && !dispatcher_signed_in? || @link_generator == false %>
 	<% if dispatcher_signed_in? %>
 		<%= link_to 'Sign Out',destroy_dispatcher_session_path,method: :delete,class: 'pull-right' %>
 		<span class="pull-right">
