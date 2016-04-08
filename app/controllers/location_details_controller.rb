@@ -2,7 +2,7 @@ class LocationDetailsController < ApplicationController
   before_action :set_location_detail,only: [:tracking_result,:refresh_tracking_result]
   before_action :check_link_generator,only: [:tracking_result,:refresh_tracking_result]
   after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
-  after_action :check_link_generator,only: [:set_location_detail]
+  # after_action :check_link_generator,only: [:set_location_detail]
 
   #if eta less then this time then we consider as reached
   $eta_time=2
