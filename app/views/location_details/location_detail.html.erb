@@ -5,7 +5,7 @@
   <% else %>
     <div>
 
-      <p> Step 1.<br> <%= link_to "CLICK HERE TO THE LINK",tracking_result_path(@location_detail.url_token),id: 'random_url', target: "_blank",class: 'std-link-format' %></p><br>
+      <p> Step 1.<br> <%= link_to "CLICK HERE TO GENERATE THE LINK",tracking_result_path(@location_detail.url_token),id: 'random_url', target: "_blank",class: 'std-link-format' %></p><br>
       <p>Step 2. <br>AFTER YOU HAVE GENERATED THE LINK, YOU CAN NOW SHARE THIS URL
  <br>
       <%= link_to tracking_result_url(@location_detail.url_token),tracking_result_path(@location_detail.url_token),id: 'random_url', target: "_blank" %></p>
