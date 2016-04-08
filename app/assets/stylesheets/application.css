@@ -19,3 +19,10 @@
  .pac-container{
  	z-index: 9999;
  }
+ .font-18{
+ 	font-size: 18px;
+ }
+ .std-link-format{
+ 	color: #337ab7;
+  text-decoration: underline;
+ }
