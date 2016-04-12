@@ -67,7 +67,7 @@
     if (diff_in_sec < 0){
       var timer_seconds = "<%= @location_detail.current_eta*60 %>";
     }else{
-      <% if (@eta).between?(1,6) %>
+      <% if (@location_detail.current_eta).between?(1,6) %>
         timer_seconds = parseInt("<%= @location_detail.next_refresh_time %>")
       <% else %>
         var timer_seconds = Math.round((parseInt("<%= @location_detail.current_eta*60 %>") - diff_in_sec)/2);
