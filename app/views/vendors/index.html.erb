@@ -3,15 +3,19 @@
 	<th>CUSTOMER_FN</th>
 	<th>CUSTOMER_LN</th>
 	<th>TIMER</th>
+	<th>STATUS</th>
 	<% @ten_location.each_with_index do |location, index| %>
 		<tr>
 			<td><%= location.current_eta %></td>
 			<td><%= location.dispatcher.first_name %></td>
 			<td><%= location.dispatcher.last_name %></td>
-			<td>
+			<td id= "timer">
 				<span id="timer-hours-<%= index %>"></span> hr
       	<span id="timer-minutes-<%= index %>"></span> min
       	<span id="timer-sec-<%= index %>"></span> sec
+      </td>
+      <td>
+      	<%= location.status.titleize %>
       </td>
 		</tr>
 	<% end %>
@@ -26,6 +30,7 @@
 		var eta_calc_time = []
 		var timer_seconds = []
 		var diff_in_sec = []
+		var status = <%=raw @ten_location.map { |rec| rec.status } %>
 		var loop_count = <%= @ten_location.length %>
 	  // var eta_calc_time = <%=raw @ten_location.map { |rec| rec.updated_at.strftime('%Y/%m/%d %H:%M:%S %z') } %>
 	  var eta_calc_time = <%=raw @ten_location.map { |rec| rec.eta_calc_time.strftime('%Y/%m/%d %H:%M:%S %z') } %>
@@ -58,9 +63,14 @@
 	  	// console.log(count_secs[i])
 	  	// console.log(count_minutes[i])
 	  	// console.log(count_hours[i])
-	    $("#timer-minutes-"+i).html(count_minutes[i]);
-	    $("#timer-hours-"+i).html(count_hours[i]);
-    	$("#timer-sec-"+i).html(count_secs[i]);
+	  	if(status[i] == "terminated" || status[i] == "reached"){
+	  		$("#timer").html("-")
+	  	}
+	  	else{
+		    $("#timer-minutes-"+i).html(count_minutes[i]);
+		    $("#timer-hours-"+i).html(count_hours[i]);
+		  	$("#timer-sec-"+i).html(count_secs[i]);
+		  }
 	  }
     var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 

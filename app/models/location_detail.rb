@@ -1,5 +1,5 @@
 class LocationDetail < ActiveRecord::Base
-  enum status: { pending: 0, tracking: 1, reached: 2 }
+  enum status: { pending: 0, tracking: 1, reached: 2, terminated: 3 }
   belongs_to :dispatcher
   before_create :create_url_token
 
