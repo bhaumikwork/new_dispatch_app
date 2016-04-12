@@ -67,13 +67,24 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true 
   ActionMailer::Base.delivery_method = :smtp
 
+  # ActionMailer::Base.smtp_settings = {
+  #   :address => "smtp.sendgrid.net",
+  #   :port => 587,
+  #   :domain => "Dispatch.com",
+  #   :authentication => :plain,
+  #   :user_name => "gujaratholidays",
+  #   :password => "gauravgarg",
+  #   :enable_starttls_auto => true
+  # }
+
   ActionMailer::Base.smtp_settings = {
     :address => "smtp.sendgrid.net",
     :port => 587,
     :domain => "Dispatch.com",
     :authentication => :plain,
-    :user_name => "gujaratholidays",
-    :password => "gauravgarg",
+    :user_name => "horizonpawanimmigrationeducation
+",
+    :password => "horizonpawanimmigration123",
     :enable_starttls_auto => true
   }
 
