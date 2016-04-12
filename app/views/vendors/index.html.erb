@@ -30,7 +30,8 @@
 		var eta_calc_time = []
 		var timer_seconds = []
 		var diff_in_sec = []
-		var status = <%=raw @ten_location.map { |rec| rec.status } %>
+		var status = []
+		status = <%=raw @ten_location.map { |rec| rec.status } %>
 		var loop_count = <%= @ten_location.length %>
 	  // var eta_calc_time = <%=raw @ten_location.map { |rec| rec.updated_at.strftime('%Y/%m/%d %H:%M:%S %z') } %>
 	  var eta_calc_time = <%=raw @ten_location.map { |rec| rec.eta_calc_time.strftime('%Y/%m/%d %H:%M:%S %z') } %>
@@ -63,6 +64,9 @@
 	  	// console.log(count_secs[i])
 	  	// console.log(count_minutes[i])
 	  	// console.log(count_hours[i])
+	  	// status[i] = status[i].replace("&quot;", '')
+	  	console.log(status )
+	  	console.log(status[i] )
 	  	if(status[i] == "terminated" || status[i] == "reached"){
 	  		$("#timer").html("-")
 	  	}
