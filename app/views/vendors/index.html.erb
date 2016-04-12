@@ -46,8 +46,12 @@
 	    if (diff_in_sec[i] < 0){
 	      timer_seconds[i] = current_eta[i]*60;
 	    }else{
-	      timer_seconds[i] = Math.round(((current_eta[i]*60) - diff_in_sec[i])/2);
-	      // timer_seconds[i] = diff_in_sec[i];
+	    	<% if (@location_detail[i].current_eta).between?(1,6) %>
+        	timer_seconds[i] = parseInt("<%= @location_detail[i].next_refresh_time %>")
+        <% else %>
+	      	timer_seconds[i] = Math.round(((current_eta[i]*60) - diff_in_sec[i])/2);
+	      	// timer_seconds[i] = diff_in_sec[i];
+	      <% end %>
 	    }
 
 	    if (timer_seconds[i] > current_eta[i]*60 || timer_seconds[i] < 0 ) {
