@@ -9,7 +9,7 @@
 			<td><%= location.current_eta %></td>
 			<td><%= location.dispatcher.first_name %></td>
 			<td><%= location.dispatcher.last_name %></td>
-			<td id= "timer">
+			<td id= "timer-<%= index %>">
 				<span id="timer-hours-<%= index %>"></span> hr
       	<span id="timer-minutes-<%= index %>"></span> min
       	<span id="timer-sec-<%= index %>"></span> sec
@@ -30,8 +30,7 @@
 		var eta_calc_time = []
 		var timer_seconds = []
 		var diff_in_sec = []
-		var status = []
-		status = <%=raw @ten_location.map { |rec| rec.status } %>
+		var track_status = <%=raw @ten_location.map { |rec| rec.status } %>
 		var loop_count = <%= @ten_location.length %>
 	  // var eta_calc_time = <%=raw @ten_location.map { |rec| rec.updated_at.strftime('%Y/%m/%d %H:%M:%S %z') } %>
 	  var eta_calc_time = <%=raw @ten_location.map { |rec| rec.eta_calc_time.strftime('%Y/%m/%d %H:%M:%S %z') } %>
@@ -65,10 +64,8 @@
 	  	// console.log(count_minutes[i])
 	  	// console.log(count_hours[i])
 	  	// status[i] = status[i].replace("&quot;", '')
-	  	console.log(status )
-	  	console.log(status[i] )
-	  	if(status[i] == "terminated" || status[i] == "reached"){
-	  		$("#timer").html("-")
+	  	if(track_status[i] == "terminated" || track_status[i] == "reached" || track_status[i] == "pending"){
+	  		$("#timer-"+i).html("-")
 	  	}
 	  	else{
 		    $("#timer-minutes-"+i).html(count_minutes[i]);
@@ -81,31 +78,36 @@
     function timer()
     {
       for(i=0; i<=loop_count-1; i++){
-	      count_secs[i]=count_secs[i]-1;
-	      if (count_secs[i] < 0)
-	      {
-	        count_secs[i] = 59;
-	        count_minutes[i] = count_minutes[i]-1;
-	        // console.log("In sec if : "+ String(count_minutes[i]))
-	        if (count_minutes[i] >= 0)
-	      		$("#timer-minutes-"+i).html(count_minutes[i]);
-	      }
-      	// console.log("minutes : "+ String(count_minutes[i]))
-	      if (count_minutes[i] < 0)
-	      {
-	        count_minutes[i] = 59;
-	        if (count_hours[i] > 0)
-	          $("#timer-minutes-"+i).html(count_minutes[i]);
-	        count_hours[i] = count_hours[i]-1;
-	        if (count_hours[i] >= 0)
-	          $("#timer-hours-"+i).html(count_hours[i]);
-	      }
-	      if (count_hours[i] < 0){
-	      	clearInterval(counter);
-	      	// refreshInternal();
-	      	return;
-	      }
-	      $("#timer-sec-"+i).html(count_secs[i]);
+      	if(track_status[i] == "terminated" || track_status[i] == "reached" || track_status[i] == "pending"){
+		  		$("#timer-"+i).html("-")
+		  	}
+		  	else{
+		      count_secs[i]=count_secs[i]-1;
+		      if (count_secs[i] < 0)
+		      {
+		        count_secs[i] = 59;
+		        count_minutes[i] = count_minutes[i]-1;
+		        // console.log("In sec if : "+ String(count_minutes[i]))
+		        if (count_minutes[i] >= 0)
+		      		$("#timer-minutes-"+i).html(count_minutes[i]);
+		      }
+	      	// console.log("minutes : "+ String(count_minutes[i]))
+		      if (count_minutes[i] < 0)
+		      {
+		        count_minutes[i] = 59;
+		        if (count_hours[i] > 0)
+		          $("#timer-minutes-"+i).html(count_minutes[i]);
+		        count_hours[i] = count_hours[i]-1;
+		        if (count_hours[i] >= 0)
+		          $("#timer-hours-"+i).html(count_hours[i]);
+		      }
+		      if (count_hours[i] < 0){
+		      	clearInterval(counter);
+		      	// refreshInternal();
+		      	return;
+		      }
+		      $("#timer-sec-"+i).html(count_secs[i]);
+		    }
 	    }
     }
 </script>

@@ -3,5 +3,6 @@ class VendorsController < ApplicationController
 
   def index
   	@ten_location = LocationDetail.last(10)
+  	# @status = LocationDetail.order("id desc").limit(10).pluck(:status)
   end
 end
