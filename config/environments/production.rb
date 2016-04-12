@@ -95,6 +95,6 @@ Rails.application.configure do
   :email => {
     :email_prefix => "Dispatch error ",
     :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{sanket.tps@gmail.com}
+    :exception_recipients => %w{sanket.tps@gmail.com divyang.tps@gmail.com jignesh.tps@gmail.com}
   }
 end
