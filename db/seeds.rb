@@ -17,7 +17,7 @@
 							{name: "Delaware"},
 							{name: "Florida"},
 							{name: "Georgia"}, 
-							{name: "Hawaii"}
+							{name: "Hawaii"},
 							{name: "Idaho"}, 
 							{name: "Illinois"}, 
 							{name: "Indiana"}, 

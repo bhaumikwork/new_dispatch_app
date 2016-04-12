@@ -1,17 +1,34 @@
 Rails.application.routes.draw do
+  get 'vendors/index'
+
+  devise_for :vendors
+  devise_scope :vendor do
+    get "mikescoffeeshop/admin" => "vendors#index"
+    authenticated :vendor do
+      root to: redirect("mikescoffeeshop/admin")
+    end
+    # unauthenticated :vendor do
+    #   # root :to => "devise/sessions#new", as: :unauthenticated_vendor_root
+    #   root :to => "home#home", as: :unauthenticated_vendor_root
+    # end
+  end
   devise_for :dispatchers, :controllers => {:confirmations => 'dispatchers/confirmations'}
   devise_scope :dispatcher do
     patch "/confirm" => "dispatchers/confirmations#confirm"
     authenticated :dispatcher do
       root to: "home#dashboard", as: :authenticated_root
     end
-    unauthenticated :dispatcher do
-      root :to => "home#home", as: :unauthenticated_root
-    end
+    # unauthenticated :dispatcher do
+    #   root :to => "home#home", as: :unauthenticated_root
+    # end
+  end
+  unauthenticated :dispatcher do
+    root :to => "home#home", as: :unauthenticated_root
   end
   get 'location_detail_popup' => 'location_details#location_detail_popup'
   get 'tracking_result/:url_token' => 'location_details#tracking_result',as: :tracking_result
   get 'refresh_tracking_result/:url_token' => 'location_details#refresh_tracking_result',as: :refresh_tracking_result
+  get 'set_next_refresh_time/:url_token' => 'location_details#set_next_refresh_time',as: :set_next_refresh_time
   post 'location_detail' => 'location_details#location_detail', as: :'location_detail_resolve'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

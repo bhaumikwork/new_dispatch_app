@@ -7,4 +7,8 @@ class HomeController < ApplicationController
 	def home
 		
 	end
+
+	def vender_home
+		
+	end
 end

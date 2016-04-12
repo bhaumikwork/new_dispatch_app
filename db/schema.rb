@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160401100738) do
+ActiveRecord::Schema.define(version: 20160412070121) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,9 +58,29 @@ ActiveRecord::Schema.define(version: 20160401100738) do
     t.integer  "dispatcher_refresh_count", default: 0
     t.boolean  "is_terminate",             default: false
     t.string   "image_url"
+    t.integer  "next_refresh_time",        default: 0
+    t.integer  "status",                   default: 0
   end
 
   add_index "location_details", ["dispatcher_id"], name: "index_location_details_on_dispatcher_id", using: :btree
+
+  create_table "vendors", force: :cascade do |t|
+    t.string   "email",                  default: "", null: false
+    t.string   "encrypted_password",     default: "", null: false
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          default: 0,  null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet     "current_sign_in_ip"
+    t.inet     "last_sign_in_ip"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_index "vendors", ["email"], name: "index_vendors_on_email", unique: true, using: :btree
+  add_index "vendors", ["reset_password_token"], name: "index_vendors_on_reset_password_token", unique: true, using: :btree
 
   add_foreign_key "location_details", "dispatchers"
 end

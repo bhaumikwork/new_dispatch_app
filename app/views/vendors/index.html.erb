@@ -1,0 +1,97 @@
+<table class="table">
+	<th>ETA</th>
+	<th>CUSTOMER_FN</th>
+	<th>CUSTOMER_LN</th>
+	<th>TIMER</th>
+	<% @ten_location.each_with_index do |location, index| %>
+		<tr>
+			<td><%= location.current_eta %></td>
+			<td><%= location.dispatcher.first_name %></td>
+			<td><%= location.dispatcher.last_name %></td>
+			<td>
+				<span id="timer-hours-<%= index %>"></span> hr
+      	<span id="timer-minutes-<%= index %>"></span> min
+      	<span id="timer-sec-<%= index %>"></span> sec
+      </td>
+		</tr>
+	<% end %>
+</table>
+
+<script type="text/javascript">
+	var currenttime = new Date();
+
+		var count_secs = []
+		var count_minutes = []
+		var count_hours = []
+		var eta_calc_time = []
+		var timer_seconds = []
+		var diff_in_sec = []
+		var loop_count = <%= @ten_location.length %>
+	  // var eta_calc_time = <%=raw @ten_location.map { |rec| rec.updated_at.strftime('%Y/%m/%d %H:%M:%S %z') } %>
+	  var eta_calc_time = <%=raw @ten_location.map { |rec| rec.eta_calc_time.strftime('%Y/%m/%d %H:%M:%S %z') } %>
+	  var next_refresh_time = <%=raw @ten_location.map { |rec| rec.next_refresh_time } %>
+	  var current_eta = <%=raw @ten_location.map {|rec| rec.current_eta } %>
+		for(i=0; i<=loop_count-1; i++){
+	    eta_calc_time[i] = new Date(eta_calc_time[i]);
+	    diff_in_sec[i] = Math.ceil((currenttime - eta_calc_time[i])/1000)
+	    console.log(next_refresh_time)
+	    console.log(next_refresh_time[i])
+	    // diff_in_sec[i] = next_refresh_time[i]
+	    // console.log(current_eta[i])
+	    if (diff_in_sec[i] < 0){
+	      timer_seconds[i] = current_eta[i]*60;
+	    }else{
+	      timer_seconds[i] = Math.round(((current_eta[i]*60) - diff_in_sec[i])/2);
+	      // timer_seconds[i] = diff_in_sec[i];
+	    }
+
+	    if (timer_seconds[i] > current_eta[i]*60 || timer_seconds[i] < 0 ) {
+	      timer_seconds[i] = current_eta[i]*60
+	    }
+	   //  count_secs[i]=Math.round((timer_seconds[i]%60)/2);
+	   //  count_minutes[i]=Math.round((((timer_seconds[i]-count_secs[i])%3600)/60)/2);
+	  	// count_hours[i]=Math.round(Math.floor(timer_seconds[i]/3600)/2);
+      count_secs[i]=timer_seconds[i]%60;
+			count_minutes[i]=((timer_seconds[i]-count_secs[i])%3600)/60;
+			count_hours[i]=Math.floor(timer_seconds[i]/3600);
+      // console.log("seconds : "+ String(timer_seconds[i]))
+	  	// console.log(count_secs[i])
+	  	// console.log(count_minutes[i])
+	  	// console.log(count_hours[i])
+	    $("#timer-minutes-"+i).html(count_minutes[i]);
+	    $("#timer-hours-"+i).html(count_hours[i]);
+    	$("#timer-sec-"+i).html(count_secs[i]);
+	  }
+    var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+
+    function timer()
+    {
+      for(i=0; i<=loop_count-1; i++){
+	      count_secs[i]=count_secs[i]-1;
+	      if (count_secs[i] < 0)
+	      {
+	        count_secs[i] = 59;
+	        count_minutes[i] = count_minutes[i]-1;
+	        // console.log("In sec if : "+ String(count_minutes[i]))
+	        if (count_minutes[i] >= 0)
+	      		$("#timer-minutes-"+i).html(count_minutes[i]);
+	      }
+      	// console.log("minutes : "+ String(count_minutes[i]))
+	      if (count_minutes[i] < 0)
+	      {
+	        count_minutes[i] = 59;
+	        if (count_hours[i] > 0)
+	          $("#timer-minutes-"+i).html(count_minutes[i]);
+	        count_hours[i] = count_hours[i]-1;
+	        if (count_hours[i] >= 0)
+	          $("#timer-hours-"+i).html(count_hours[i]);
+	      }
+	      if (count_hours[i] < 0){
+	      	clearInterval(counter);
+	      	// refreshInternal();
+	      	return;
+	      }
+	      $("#timer-sec-"+i).html(count_secs[i]);
+	    }
+    }
+</script>

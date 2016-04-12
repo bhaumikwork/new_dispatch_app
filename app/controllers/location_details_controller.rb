@@ -1,11 +1,12 @@
 class LocationDetailsController < ApplicationController
-  before_action :set_location_detail,only: [:tracking_result,:refresh_tracking_result]
+  before_action :set_location_detail,only: [:tracking_result,:refresh_tracking_result, :set_next_refresh_time]
   before_action :check_link_generator,only: [:tracking_result,:refresh_tracking_result]
   after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
+  before_action :update_status, only: [:tracking_result]
   # after_action :check_link_generator,only: [:set_location_detail]
 
   #if eta less then this time then we consider as reached
-  $eta_time=2
+  $eta_time=1
 
   # just opens a popup for taking destination address
   def location_detail_popup
@@ -18,6 +19,8 @@ class LocationDetailsController < ApplicationController
     Geocoder::Configuration.timeout = 10000
     @dest_location = Geocoder.search(query).first
     logger.info"<====================#{@dest_location.inspect}=========================>"
+    logger.info"<=========latitude===========#{@dest_location.latitude}=========================>"
+    logger.info"<=========longitude===========#{@dest_location.longitude}=========================>"
     set_source_and_dest_points(params[:curr_lat],params[:curr_long],@dest_location.latitude,@dest_location.longitude)
     geteta
     unless @error
@@ -39,26 +42,31 @@ class LocationDetailsController < ApplicationController
   def tracking_result
     if @link_generator
       @time_variation = 0
-      @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
+      # @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
       @time_variation = 10000
-      @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
+      # @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
     @eta = @location_detail.eta
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
-    refresh_image
+    check_for_reached
+    # refresh_image
+    logger.info"========eta======#{@eta}================="
+    logger.info"=======eta_min========#{@eta_min}================"
+    logger.info"========eta_hr=======#{@eta_hr}================"
+    logger.info"======@time_variation===========#{@time_variation}=============="
   end
 
   # At timer ends this will refresh tracking results 
   def refresh_tracking_result
     if @link_generator
       @time_variation = 0
-      @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
+      # @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
     else
       @time_variation = 10000
-      @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
+      # @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 4
     end
     if !@is_api_limit_exceed
       if @link_generator && params[:curr_lat].present? && params[:curr_long].present?
@@ -69,15 +77,18 @@ class LocationDetailsController < ApplicationController
       geteta
       if @link_generator && !@error
         @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) 
-        refresh_image
+        # refresh_image
       end
-      if @eta <= $eta_time
-        @location_detail.update(is_reached: true,current_eta: @eta) 
-      end
+      check_for_reached
     else
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     end
     respond_to :js
+  end
+
+  def set_next_refresh_time
+    @location_detail.update(next_refresh_time: params[:sec])
+    render text:  "success"
   end
 
   private
@@ -101,6 +112,7 @@ class LocationDetailsController < ApplicationController
       @error = false
       if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
         @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
+        # @eta = 60/60.0 # testing value
         @eta = @eta.round
         @eta_min = (@eta)%60
         @eta_hr = (@eta)/60
@@ -146,4 +158,28 @@ class LocationDetailsController < ApplicationController
     def check_link_generator
       @link_generator = @location_detail.dispatcher == current_dispatcher ? true : false
     end
+
+    def update_status
+      @location_detail.tracking!
+    end
+
+    def check_for_reached
+      if @eta <= 5
+        if @eta <= $eta_time
+          @location_detail.update(is_reached: true,current_eta: @eta)
+          @location_detail.reached!
+        else
+          @location_detail.update(next_refresh_time: 10)
+        end
+      else
+        # @location_detail.update(next_refresh_time: (Time.zone.now - @location_detail.eta_calc_time))
+        # @location_detail.update(next_refresh_time: (@eta/2.0).round * 60)
+        # @location_detail.update(next_refresh_time: (((@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time))/2).round)
+        # logger.info"============Time.zone.now================#{Time.zone.now}============"
+        # logger.info"============@location_detail.eta_calc_time================#{@location_detail.eta_calc_time}============"
+        # logger.info"============location_detail================#{@location_detail.inspect}============"
+        # logger.info"============diff================#{((Time.zone.now - @location_detail.eta_calc_time)/2).round}============"
+      end
+    end
+
 end
