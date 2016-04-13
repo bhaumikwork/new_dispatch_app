@@ -92,6 +92,7 @@
 				        	eta_calc_time[i] = data.eta_calc_time
 				        	current_eta[i] = data.current_eta
 				        	next_refresh_time[i] = data.next_refresh_time
+				        	refresh_count[i] = data.refresh_count
 				        	set_initial_time(i)
 				        }
 				        else{
@@ -123,6 +124,7 @@
 		        	eta_calc_time[i] = data.eta_calc_time
 		        	current_eta[i] = data.current_eta
 		        	next_refresh_time[i] = data.next_refresh_time
+				      refresh_count[i] = data.refresh_count
 		        	set_initial_time(i)
 		        	clearInterval(intervalIds[i])
 		        }
