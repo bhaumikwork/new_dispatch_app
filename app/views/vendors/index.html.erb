@@ -43,7 +43,6 @@
 	  var current_eta = <%=raw @ten_location.map {|rec| rec.current_eta } %>
 
 		for(i=0; i<=loop_count-1; i++){
-			var currenttime = new Date();
 	    set_initial_time(i)
 	  }
     var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
@@ -88,13 +87,15 @@
 				      success: function (data) {
 				        console.log(data)
 				        if(data.update == true){
-				        	var currenttime = new Date();
 				        	eta_calc_time[i] = data.eta_calc_time
 				        	current_eta[i] = data.current_eta
 				        	next_refresh_time[i] = data.next_refresh_time
 				        	refresh_count[i] = data.refresh_count
 				      		if(data.track_status == "terminated" || data.track_status == "reached"){
 				      			track_status[i] = data.track_status
+				      		}
+				      		else{
+				      			track_status[i] = "tracking"
 				      		}
 				        	set_initial_time(i)
 				        }
@@ -123,13 +124,15 @@
 		      success: function (data) {
 		        console.log(data)
 		        if(data.update == true){
-		        	var currenttime = new Date();
 		        	eta_calc_time[i] = data.eta_calc_time
 		        	current_eta[i] = data.current_eta
 		        	next_refresh_time[i] = data.next_refresh_time
 				      refresh_count[i] = data.refresh_count
 				      if(data.track_status == "terminated" || data.track_status == "reached"){
 		      			track_status[i] = data.track_status
+		      		}
+		      		else{
+		      			track_status[i] = "tracking"
 		      		}
 		        	set_initial_time(i)
 		        	clearInterval(intervalIds[i])
@@ -140,6 +143,7 @@
     }
 
     function set_initial_time(i){
+    	var currenttime = new Date();
     	eta_calc_time[i] = new Date(eta_calc_time[i]);
 	    diff_in_sec[i] = Math.ceil((currenttime - eta_calc_time[i])/1000)
 	    // console.log(next_refresh_time)
