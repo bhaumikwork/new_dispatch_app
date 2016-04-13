@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   get 'tracking_result/:url_token' => 'location_details#tracking_result',as: :tracking_result
   get 'refresh_tracking_result/:url_token' => 'location_details#refresh_tracking_result',as: :refresh_tracking_result
   get 'set_next_refresh_time/:url_token' => 'location_details#set_next_refresh_time',as: :set_next_refresh_time
+  get 'get_new_time/:url_token' => 'location_details#get_new_time',as: :get_new_time
   post 'location_detail' => 'location_details#location_detail', as: :'location_detail_resolve'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

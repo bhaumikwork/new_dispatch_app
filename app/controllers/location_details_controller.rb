@@ -1,5 +1,5 @@
 class LocationDetailsController < ApplicationController
-  before_action :set_location_detail,only: [:tracking_result,:refresh_tracking_result, :set_next_refresh_time]
+  before_action :set_location_detail,only: [:tracking_result,:refresh_tracking_result, :set_next_refresh_time, :get_new_time]
   before_action :check_link_generator,only: [:tracking_result,:refresh_tracking_result]
   after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
   before_action :update_status, only: [:tracking_result]
@@ -91,13 +91,21 @@ class LocationDetailsController < ApplicationController
     render text:  "success"
   end
 
+  def get_new_time
+    if @location_detail.dispatcher_refresh_count > params[:old_refresh_count].to_i
+      render json: {update: true, record: @location_detail.id,eta_calc_time: @location_detail.eta_calc_time,current_eta: @location_detail.current_eta,next_refresh_time: @location_detail.next_refresh_time }
+    else
+      render json: {update: false, record: @location_detail.id}
+    end
+  end
+
   private
     #will set location detail
     def set_location_detail
       @location_detail = LocationDetail.find_by_url_token(params[:url_token])
     end
 
-    # calls distancematrix api with source-destination points and get ETA 
+    # calls distancematrix api with source-destination points and get ETA
     def geteta
       url = URI("https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial&origins=#{@source_point}&destinations=#{@dest_point}")
       http = Net::HTTP.new(url.host, url.port)
@@ -112,7 +120,7 @@ class LocationDetailsController < ApplicationController
       @error = false
       if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
         @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
-        # @eta = 60/60.0 # testing value
+        # @eta = 300/60.0 # testing value
         @eta = @eta.round
         @eta_min = (@eta)%60
         @eta_hr = (@eta)/60

@@ -35,3 +35,9 @@
 		console.log("error");
     $('.error').html('You have not clicked on allow button to share your location. So we can not track the current location. It will not work.')
 	}
+
+Number.prototype.between = function(a, b) {
+  var min = Math.min.apply(Math, [a, b]),
+    max = Math.max.apply(Math, [a, b]);
+  return this > min && this < max;
+};

@@ -57,20 +57,21 @@
   window.onbeforeunload = function () {
     return 'The following action will cause you to lose all displayed data...are you sure you wish to continue?';
   }
-  
+
   <% if !@is_api_limit_exceed %>
     var currenttime = new Date();
     var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
     diff_in_sec = Math.ceil((currenttime - eta_calc_time)/1000)
-    // diff_in_sec = parseInt("<%= @location_detail.next_refresh_time %>");
-    console.log("diff in sec : "+String(diff_in_sec))
+    // diff_in_sec = (currenttime - eta_calc_time)/1000
+    // console.log("diff in sec : "+String(diff_in_sec))
     if (diff_in_sec < 0){
       var timer_seconds = "<%= @location_detail.current_eta*60 %>";
     }else{
       <% if (@location_detail.current_eta).between?(1,6) %>
         timer_seconds = parseInt("<%= @location_detail.next_refresh_time %>")
       <% else %>
-        var timer_seconds = Math.round((parseInt("<%= @location_detail.current_eta*60 %>") - diff_in_sec)/2);
+        timer_seconds = Math.round((parseInt("<%= @location_detail.current_eta*60 %>") - diff_in_sec)/2);
+        // timer_seconds = ("<%#= @location_detail.current_eta*60 %>" - diff_in_sec);
         $.ajax({
           url: '/set_next_refresh_time/'+'<%= @location_detail.url_token %>',
           type: 'get',
@@ -79,17 +80,16 @@
             data
           }
         });
-        // var timer_seconds = Math.round(("<%= @location_detail.current_eta*60 %>" - diff_in_sec)/2);
-        // var timer_seconds = diff_in_sec;
       <% end %>
     }
 
     if (timer_seconds > parseInt("<%= @location_detail.current_eta*60 %>") || timer_seconds < 0 ) {
       timer_seconds = "<%= @location_detail.current_eta*60 %>";
     }
-   //  var count_secs=Math.round((timer_seconds%60));
+   //  var count_secs=Math.round((timer_seconds%60)/2);
    //  var count_minutes=Math.round((((timer_seconds-count_secs)%3600)/60)/2);
   	// var count_hours=Math.round(Math.floor(timer_seconds/3600)/2);
+    // var count_mili_secs=parseInt(String(timer_seconds).split(".")[1])
     var count_secs=timer_seconds%60;
     var count_minutes=((timer_seconds-count_secs)%3600)/60;
     var count_hours=Math.floor(timer_seconds/3600);
