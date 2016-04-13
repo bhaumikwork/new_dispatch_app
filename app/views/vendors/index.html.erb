@@ -87,6 +87,7 @@
 				      success: function (data) {
 				        console.log(data)
 				        if(data.update == true){
+				        	console.log("in first ajax if")
 				        	eta_calc_time[i] = data.eta_calc_time
 				        	current_eta[i] = data.current_eta
 				        	next_refresh_time[i] = data.next_refresh_time
@@ -97,6 +98,11 @@
 				      		else{
 				      			track_status[i] = "tracking"
 				      		}
+				      		console.log("eta_calc_time : ",eta_calc_time[i])
+				      		console.log("current_eta : ",current_eta[i])
+				      		console.log("next_refresh_time : ",next_refresh_time[i])
+				      		console.log("refresh_count : ",refresh_count[i])
+				      		console.log("track_status : ",track_status[i])
 				        	set_initial_time(i)
 				        }
 				        else{
@@ -143,6 +149,7 @@
     }
 
     function set_initial_time(i){
+    	console.log("in set_initial_time")
     	var currenttime = new Date();
     	eta_calc_time[i] = new Date(eta_calc_time[i]);
 	    diff_in_sec[i] = Math.ceil((currenttime - eta_calc_time[i])/1000)
@@ -178,11 +185,13 @@
 	  	// console.log(count_hours[i])
 	  	// status[i] = status[i].replace("&quot;", '')
 	  	if(track_status[i] == "terminated" || track_status[i] == "reached" || track_status[i] == "pending"){
+	  		console.log("in status if", track_status[i])
 	  		$("#timer-"+i).html("-")
 	  		$("#timer-status-"+i).html(track_status[i].capitalizeFirstLetter())
 
 	  	}
 	  	else{
+	  		console.log("in else replace html")
 	  		// count_secs[9] = 10
 	  		// count_minutes[9] = 0
 	  		// count_secs[5] = 10
