@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   get 'set_next_refresh_time/:url_token' => 'location_details#set_next_refresh_time',as: :set_next_refresh_time
   get 'get_new_time/:url_token' => 'location_details#get_new_time',as: :get_new_time
   post 'location_detail' => 'location_details#location_detail', as: :'location_detail_resolve'
+  get "mikescoffeeshop/admin/map" => "vendors#vendor_map", as: :vendor_map
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

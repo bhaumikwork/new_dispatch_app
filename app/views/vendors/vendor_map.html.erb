@@ -1,0 +1,48 @@
+<div id="vendor_map" style="width:500px; height:500px"></div>
+
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB1tbIAqN0XqcgTR1-FxYoVTVq6Is6lD98&sensor=false">
+    </script>
+<script type="text/javascript">
+
+      var locations = <%=raw @ten_location %>
+
+        console.log(locations)
+
+        initialize()
+
+      function initialize() {
+        var myOptions = {
+          center: new google.maps.LatLng(33.890542, 151.274856),
+          zoom: 5,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("vendor_map"),
+            myOptions);
+        setMarkers(map,locations)
+
+      }
+      function setMarkers(map,locations){
+        var marker, i
+        for (i = 0; i < locations.length; i++){  
+          var loan = locations[i][0]
+          var lat = locations[i][1]
+          var long = locations[i][2]
+          var add =  locations[i][3]
+
+          latlngset = new google.maps.LatLng(lat, long);
+
+          var marker = new google.maps.Marker({ map: map, title: loan , position: latlngset  });
+          map.setCenter(marker.getPosition())
+          var content = "Loan Number: " + loan +  '</h3>' + "Address: " + add     
+          var infowindow = new google.maps.InfoWindow()
+
+          google.maps.event.addListener(marker,'click', (function(marker,content,infowindow){ 
+            return function() {
+              infowindow.setContent(content);
+              infowindow.open(map,marker);
+            };
+          })(marker,content,infowindow)); 
+        }
+      }
+    </script>
