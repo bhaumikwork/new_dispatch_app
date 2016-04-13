@@ -94,8 +94,8 @@
 				        	next_refresh_time[i] = data.next_refresh_time
 				        	refresh_count[i] = data.refresh_count
 				      		if(data.track_status == "terminated" || data.track_status == "reached"){
-		      			track_status[i] = data.track_status
-		      		}
+				      			track_status[i] = data.track_status
+				      		}
 				        	set_initial_time(i)
 				        }
 				        else{
@@ -145,9 +145,9 @@
 	    // console.log(next_refresh_time)
 	    // console.log(next_refresh_time[i])
 	    // diff_in_sec[i] = next_refresh_time[i]
-	    // console.log(current_eta[i])
 	    if (diff_in_sec[i] < 0){
-	      timer_seconds[i] = current_eta[i]*60;
+        	timer_seconds[i] = next_refresh_time[i]
+	      	// timer_seconds[i] = current_eta[i]*60;
 	    }else{
 	    	if(current_eta[i].between(1,6)){
         	timer_seconds[i] = next_refresh_time[i]
