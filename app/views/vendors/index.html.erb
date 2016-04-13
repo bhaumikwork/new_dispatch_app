@@ -89,6 +89,9 @@
 				        console.log(data)
 				        if(data.update == true){
 				        	var currenttime = new Date();
+				        	eta_calc_time[i] = data.eta_calc_time
+				        	current_eta[i] = data.current_eta
+				        	next_refresh_time[i] = data.next_refresh_time
 				        	set_initial_time(i)
 				        }
 				        else{
@@ -117,6 +120,9 @@
 		        console.log(data)
 		        if(data.update == true){
 		        	var currenttime = new Date();
+		        	eta_calc_time[i] = data.eta_calc_time
+		        	current_eta[i] = data.current_eta
+		        	next_refresh_time[i] = data.next_refresh_time
 		        	set_initial_time(i)
 		        	clearInterval(intervalIds[i])
 		        }
@@ -163,8 +169,8 @@
 	  		$("#timer-"+i).html("-")
 	  	}
 	  	else{
-	  		// count_secs[9] = 10
-	  		// count_minutes[9] = 0
+	  		count_secs[9] = 10
+	  		count_minutes[9] = 0
 	  		// count_secs[5] = 10
 	  		// count_minutes[5] = 0
 	  		// console.log(count_secs[9])
