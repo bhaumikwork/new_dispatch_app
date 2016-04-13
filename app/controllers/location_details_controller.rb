@@ -92,8 +92,8 @@ class LocationDetailsController < ApplicationController
   end
 
   def get_new_time
-    if @location_detail.dispatcher_refresh_count > params[:old_refresh_count].to_i
-      render json: {update: true, record: @location_detail.id,eta_calc_time: @location_detail.eta_calc_time,current_eta: @location_detail.current_eta,next_refresh_time: @location_detail.next_refresh_time, refresh_count: @location_detail.dispatcher_refresh_count }
+    if @location_detail.dispatcher_refresh_count > params[:old_refresh_count].to_i || @location_detail.terminated?
+      render json: {update: true, record: @location_detail.id,eta_calc_time: @location_detail.eta_calc_time,current_eta: @location_detail.current_eta,next_refresh_time: @location_detail.next_refresh_time, refresh_count: @location_detail.dispatcher_refresh_count, track_status: @location_detail.status }
     else
       render json: {update: false, record: @location_detail.id}
     end

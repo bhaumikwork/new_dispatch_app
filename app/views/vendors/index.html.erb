@@ -14,7 +14,7 @@
       	<span id="timer-minutes-<%= index %>"></span> min
       	<span id="timer-sec-<%= index %>"></span> sec
       </td>
-      <td>
+      <td id="timer-status-<%= index %>">
       	<%= location.status.titleize %>
       </td>
 		</tr>
@@ -93,6 +93,9 @@
 				        	current_eta[i] = data.current_eta
 				        	next_refresh_time[i] = data.next_refresh_time
 				        	refresh_count[i] = data.refresh_count
+				      		if(data.track_status == "terminated" || data.track_status == "reached"){
+		      			track_status[i] = data.track_status
+		      		}
 				        	set_initial_time(i)
 				        }
 				        else{
@@ -125,6 +128,9 @@
 		        	current_eta[i] = data.current_eta
 		        	next_refresh_time[i] = data.next_refresh_time
 				      refresh_count[i] = data.refresh_count
+				      if(data.track_status == "terminated" || data.track_status == "reached"){
+		      			track_status[i] = data.track_status
+		      		}
 		        	set_initial_time(i)
 		        	clearInterval(intervalIds[i])
 		        }
@@ -169,10 +175,12 @@
 	  	// status[i] = status[i].replace("&quot;", '')
 	  	if(track_status[i] == "terminated" || track_status[i] == "reached" || track_status[i] == "pending"){
 	  		$("#timer-"+i).html("-")
+	  		$("#timer-status-"+i).html(track_status[i].capitalizeFirstLetter())
+
 	  	}
 	  	else{
-	  		count_secs[9] = 10
-	  		count_minutes[9] = 0
+	  		// count_secs[9] = 10
+	  		// count_minutes[9] = 0
 	  		// count_secs[5] = 10
 	  		// count_minutes[5] = 0
 	  		// console.log(count_secs[9])
