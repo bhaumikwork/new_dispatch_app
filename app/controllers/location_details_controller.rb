@@ -1,5 +1,7 @@
 class LocationDetailsController < ApplicationController
-  before_action :set_location_detail,only: [:tracking_result,:refresh_tracking_result, :set_next_refresh_time, :get_new_time]
+  include ActionView::Helpers::NumberHelper
+
+  before_action :set_location_detail,only: [:tracking_result,:refresh_tracking_result, :set_next_refresh_second, :get_new_time]
   before_action :check_link_generator,only: [:tracking_result,:refresh_tracking_result]
   after_action :set_refresh_count,only: [:refresh_tracking_result,:tracking_result]
   before_action :update_status, only: [:tracking_result]
@@ -7,6 +9,7 @@ class LocationDetailsController < ApplicationController
 
   #if eta less then this time then we consider as reached
   $eta_time=1
+  $eta_meter=10
 
   # just opens a popup for taking destination address
   def location_detail_popup
@@ -33,7 +36,8 @@ class LocationDetailsController < ApplicationController
         curr_lat:params[:curr_lat],
         curr_long:params[:curr_long],
         eta_calc_time:Time.zone.now,
-        current_eta:@eta
+        current_eta:@eta,
+        curr_mile:@curr_mile
       )
     end
   end
@@ -51,6 +55,7 @@ class LocationDetailsController < ApplicationController
     @eta = @location_detail.eta
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
+    @curr_mile = @location_detail.curr_mile
     check_for_reached
     # refresh_image
     logger.info"========eta======#{@eta}================="
@@ -76,24 +81,24 @@ class LocationDetailsController < ApplicationController
       
       geteta
       if @link_generator && !@error
-        @location_detail.update(current_eta: @eta,eta_calc_time:Time.zone.now) 
+        @location_detail.update(current_eta: @eta, eta_calc_time:Time.zone.now, curr_mile: @curr_mile)
         # refresh_image
+        check_for_reached
       end
-      check_for_reached
     else
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
     end
     respond_to :js
   end
 
-  def set_next_refresh_time
-    @location_detail.update(next_refresh_time: params[:sec])
-    render text:  "success"
-  end
+  # def set_next_refresh_second
+  #   @location_detail.update(next_refresh_second: params[:sec])
+  #   render text:  "success"
+  # end
 
   def get_new_time
     if @location_detail.dispatcher_refresh_count > params[:old_refresh_count].to_i || @location_detail.terminated?
-      render json: {update: true, record: @location_detail.id,eta_calc_time: @location_detail.eta_calc_time,current_eta: @location_detail.current_eta,next_refresh_time: @location_detail.next_refresh_time, refresh_count: @location_detail.dispatcher_refresh_count, track_status: @location_detail.status }
+      render json: {update: true, record: @location_detail.id,eta_calc_time: @location_detail.eta_calc_time,current_eta: @location_detail.current_eta, refresh_count: @location_detail.dispatcher_refresh_count, track_status: @location_detail.status, current_mile: number_with_precision(@location_detail.curr_mile/1610, precision: 2)}
     else
       render json: {update: false, record: @location_detail.id}
     end
@@ -124,6 +129,7 @@ class LocationDetailsController < ApplicationController
         @eta = @eta.round
         @eta_min = (@eta)%60
         @eta_hr = (@eta)/60
+        @curr_mile = @response["DistanceMatrixResponse"]["row"]["element"]["distance"]["value"].to_f
       else
         @error = true
       end
@@ -168,21 +174,30 @@ class LocationDetailsController < ApplicationController
     end
 
     def update_status
-      @location_detail.tracking!
+      if @location_detail.tracking_start_time.nil?
+        @location_detail.tracking!
+        @location_detail.update_attributes(tracking_start_time: Time.zone.now)
+      end
     end
 
     def check_for_reached
       if @eta <= 5
-        if @eta <= $eta_time
+        if @eta <= $eta_time || @curr_mile <= $eta_meter
           @location_detail.update(is_reached: true,current_eta: @eta)
           @location_detail.reached!
         else
-          @location_detail.update(next_refresh_time: 10)
+          @location_detail.update(next_refresh_second: 10)
+          @location_detail.update(next_refresh_time: @location_detail.eta_calc_time + 10.second)
         end
       else
-        # @location_detail.update(next_refresh_time: (Time.zone.now - @location_detail.eta_calc_time))
-        # @location_detail.update(next_refresh_time: (@eta/2.0).round * 60)
-        # @location_detail.update(next_refresh_time: (((@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time))/2).round)
+        @location_detail.update(next_refresh_time: @location_detail.eta_calc_time + (@eta/2.0).round.minute)
+        logger.info"=========ETA======#{@eta}============================="
+        logger.info"=========ETA/2======#{@eta/2.0}============================="
+        logger.info"=========next_refresh_time======#{@location_detail.next_refresh_time}============================="
+        logger.info"=========eta_calc_time======#{@location_detail.eta_calc_time}============================="
+        # @location_detail.update(next_refresh_second: (Time.zone.now - @location_detail.eta_calc_time))
+        # @location_detail.update(next_refresh_second: (@eta/2.0).round * 60)
+        # @location_detail.update(next_refresh_second: (((@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time))/2).round)
         # logger.info"============Time.zone.now================#{Time.zone.now}============"
         # logger.info"============@location_detail.eta_calc_time================#{@location_detail.eta_calc_time}============"
         # logger.info"============location_detail================#{@location_detail.inspect}============"
