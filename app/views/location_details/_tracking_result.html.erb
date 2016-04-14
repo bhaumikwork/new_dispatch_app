@@ -120,7 +120,7 @@
       $("#next-eta-box").html("Refreshing...");
       setTimeout(function(){
         $.ajax({
-          // async: false,
+          async: false,
           url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
           type: 'get',
           data: {curr_lat: curr_lat,curr_long: curr_long},
