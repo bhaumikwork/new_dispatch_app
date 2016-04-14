@@ -126,7 +126,7 @@ class LocationDetailsController < ApplicationController
       if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
         @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
         # @eta = 300/60.0 # testing value
-        @eta = @eta - 2
+        # @eta = @eta - 2
         @eta = @eta.round
         @eta_min = (@eta)%60
         @eta_hr = (@eta)/60
