@@ -2,16 +2,16 @@ class VendorsController < ApplicationController
 	before_action :authenticate_vendor!
 
   def index
-  	@locations = LocationDetail.order('id').last(10)
-  	@ten_location = []
-  	@locations.each do |location|
-  		unless location.next_refresh_time.nil?
-	  		if location.next_refresh_time < Time.zone.now() && location.tracking?
-	  			location.terminated!
-	  		end
-	  		@ten_location << location
-	  	end
-  	end
+  	@ten_location = LocationDetail.order('id').last(10)
+  	# @ten_location = []
+  	# @locations.each do |location|
+  	# 	unless location.next_refresh_time.nil?
+	  # 		if location.next_refresh_time < Time.zone.now() && location.tracking?
+	  # 			location.terminated!
+	  # 		end
+	  # 		@ten_location << location
+	  # 	end
+  	# end
   	# @status = LocationDetail.order("id desc").limit(10).pluck(:status)
   end
 
