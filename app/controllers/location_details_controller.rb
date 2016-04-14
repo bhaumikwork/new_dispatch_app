@@ -91,12 +91,9 @@ class LocationDetailsController < ApplicationController
     respond_to :js
   end
 
-  # def set_next_refresh_second
-  #   @location_detail.update(next_refresh_second: params[:sec])
-  #   render text:  "success"
-  # end
 
   def get_new_time
+    check_next_refresh_time()
     if @location_detail.dispatcher_refresh_count > params[:old_refresh_count].to_i || @location_detail.terminated?
       render json: {update: true, record: @location_detail.id,eta_calc_time: @location_detail.eta_calc_time,current_eta: @location_detail.current_eta, refresh_count: @location_detail.dispatcher_refresh_count, track_status: @location_detail.status, current_mile: number_with_precision(@location_detail.curr_mile/1610, precision: 2)}
     else
@@ -196,14 +193,15 @@ class LocationDetailsController < ApplicationController
         logger.info"=========ETA/2======#{@eta/2.0}============================="
         logger.info"=========next_refresh_time======#{@location_detail.next_refresh_time}============================="
         logger.info"=========eta_calc_time======#{@location_detail.eta_calc_time}============================="
-        # @location_detail.update(next_refresh_second: (Time.zone.now - @location_detail.eta_calc_time))
-        # @location_detail.update(next_refresh_second: (@eta/2.0).round * 60)
-        # @location_detail.update(next_refresh_second: (((@location_detail.current_eta * 60) - (Time.zone.now - @location_detail.eta_calc_time))/2).round)
-        # logger.info"============Time.zone.now================#{Time.zone.now}============"
-        # logger.info"============@location_detail.eta_calc_time================#{@location_detail.eta_calc_time}============"
-        # logger.info"============location_detail================#{@location_detail.inspect}============"
-        # logger.info"============diff================#{((Time.zone.now - @location_detail.eta_calc_time)/2).round}============"
       end
+    end
+
+    def check_next_refresh_time
+      # unless @location_detail.next_refresh_time.nil?
+      #   if @location_detail.next_refresh_time < Time.zone.now()
+      #     @location_detail.terminated!
+      #   end
+      # end
     end
 
 end
