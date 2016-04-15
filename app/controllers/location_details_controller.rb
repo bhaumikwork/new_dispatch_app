@@ -204,11 +204,12 @@ class LocationDetailsController < ApplicationController
     end
 
     def check_next_refresh_time
-      # unless @location_detail.next_refresh_time.nil?
-      #   if @location_detail.next_refresh_time < Time.zone.now()
-      #     @location_detail.terminated!
-      #   end
-      # end
+      unless @location_detail.next_refresh_time.nil?
+        logger.info"==============next_refresh_time + 15.minute==================#{@location_detail.next_refresh_time + 15.minute < Time.zone.now}========================"
+        if @location_detail.next_refresh_time + 15.minute < Time.zone.now
+          @location_detail.terminated!
+        end
+      end
     end
 
 end

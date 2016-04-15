@@ -68,9 +68,9 @@
     console.log("next_refresh_time :", next_refresh_time)
     console.log("Current_time :", currenttime)
     if (diff_in_sec < 0){
-      // var timer_seconds = "<%#= @location_detail.current_eta*60 %>";
-      refreshInternal()
-      var timer_seconds = "<%= @location_detail.current_eta*60 %>";
+      var timer_seconds = 0
+      // refreshInternal()
+      // var timer_seconds = "<%= @location_detail.current_eta*60 %>";
     }else{
         timer_seconds = diff_in_sec
     }
