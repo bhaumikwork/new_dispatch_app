@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160412070121) do
+ActiveRecord::Schema.define(version: 20160414061936) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,8 +58,11 @@ ActiveRecord::Schema.define(version: 20160412070121) do
     t.integer  "dispatcher_refresh_count", default: 0
     t.boolean  "is_terminate",             default: false
     t.string   "image_url"
-    t.integer  "next_refresh_time",        default: 0
+    t.integer  "next_refresh_second",      default: 0 # Not used this column in code
     t.integer  "status",                   default: 0
+    t.float    "curr_mile",                default: 0.0
+    t.datetime "next_refresh_time"
+    t.datetime "tracking_start_time"
   end
 
   add_index "location_details", ["dispatcher_id"], name: "index_location_details_on_dispatcher_id", using: :btree

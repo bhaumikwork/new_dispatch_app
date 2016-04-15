@@ -1,48 +1,212 @@
 <div id="vendor_map" style="width:500px; height:500px"></div>
 
-
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB1tbIAqN0XqcgTR1-FxYoVTVq6Is6lD98&sensor=false">
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1tbIAqN0XqcgTR1-FxYoVTVq6Is6lD98&sensor=false">
     </script>
 <script type="text/javascript">
+  var locations = <%=raw @ten_location_array %>
+  // var locations = [
+  // ["Sanket", "22.0259146", "72.53847189999999"]
+  // ]
 
-      var locations = <%=raw @ten_location %>
+	initialize()
+  function initialize() {
+    var myOptions = {
+      center: new google.maps.LatLng(33.890542, 151.274856),
+      zoom: 5,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(document.getElementById("vendor_map"),
+        myOptions);
+    setMarkers(map,locations)
 
-        console.log(locations)
+  }
+  function setMarkers(map,locations){
+    var marker, i
+    var bounds = new google.maps.LatLngBounds();
+    for (i = 0; i < locations.length; i++){
+      var loan = locations[i][0]
+      var lat = locations[i][1]
+      var long = locations[i][2]
+      var add =  locations[i][3]
 
-        initialize()
+      latlngset = new google.maps.LatLng(lat, long);
 
-      function initialize() {
-        var myOptions = {
-          center: new google.maps.LatLng(33.890542, 151.274856),
-          zoom: 5,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+      var marker = new google.maps.Marker({ map: map, title: loan , position: latlngset  });
+      bounds.extend(latlngset);
+      map.setCenter(marker.getPosition())
+      var content = "Loan Number: " + loan +  '</h3>' + "Address: " + add
+      var infowindow = new google.maps.InfoWindow()
+
+      google.maps.event.addListener(marker,'click', (function(marker,content,infowindow){
+        return function() {
+          infowindow.setContent(content);
+          infowindow.open(map,marker);
         };
-        var map = new google.maps.Map(document.getElementById("vendor_map"),
-            myOptions);
-        setMarkers(map,locations)
+      })(marker,content,infowindow));
+    }
+    map.fitBounds(bounds); // set boundry according customers
+  }
 
-      }
-      function setMarkers(map,locations){
-        var marker, i
-        for (i = 0; i < locations.length; i++){  
-          var loan = locations[i][0]
-          var lat = locations[i][1]
-          var long = locations[i][2]
-          var add =  locations[i][3]
 
-          latlngset = new google.maps.LatLng(lat, long);
+  var count_secs = []
+		var count_minutes = []
+		var count_hours = []
+		var eta_calc_time = []
+		var timer_seconds = []
+		var diff_in_sec = []
+		var new_time = []
+		var intervalIds = []
+		var track_status = <%=raw @ten_location.map { |rec| rec.status } %>
+		var loop_count = <%= @ten_location.length %>
+		var current_eta = <%=raw @ten_location.map { |rec| rec.current_eta } %>
+		var current_mile = <%=raw @ten_location.map { |rec| number_with_precision(rec.curr_mile/1610, precision: 2) } %>
+		// var next_refresh_second = <%=raw @ten_location.map { |rec| rec.next_refresh_second } %>
+		var refresh_count = <%=raw @ten_location.map { |rec| rec.dispatcher_refresh_count }  %>
+		var url_token = <%=raw @ten_location.map { |rec| rec.url_token }  %>
+	  var next_refresh_time = <%=raw @ten_location.map { |rec| rec.next_refresh_time.nil? ? "" : rec.next_refresh_time.strftime('%Y/%m/%d %H:%M:%S %z') } %>
 
-          var marker = new google.maps.Marker({ map: map, title: loan , position: latlngset  });
-          map.setCenter(marker.getPosition())
-          var content = "Loan Number: " + loan +  '</h3>' + "Address: " + add     
-          var infowindow = new google.maps.InfoWindow()
+		initializeTimer()
+		function initializeTimer(){
+			for(i=0; i<=loop_count-1; i++){
+		    set_initial_time(i)
+		  }
+		}
+    var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
-          google.maps.event.addListener(marker,'click', (function(marker,content,infowindow){ 
-            return function() {
-              infowindow.setContent(content);
-              infowindow.open(map,marker);
-            };
-          })(marker,content,infowindow)); 
-        }
-      }
-    </script>
+    function timer()
+    {
+      for(i=0; i<=loop_count-1; i++){
+      	if(track_status[i] == "terminated" || track_status[i] == "reached" || track_status[i] == "pending"){
+		  		$("#timer-"+i).html("-")
+		  	}
+		  	else{
+		      count_secs[i]=count_secs[i]-1;
+		      // count_secs[i]=count_secs[i]-1;
+		      if (count_secs[i] < 0 && count_secs[i] >= -2)
+		      {
+		        count_secs[i] = 59;
+		        // count_secs[i] = 10;
+		        count_minutes[i] = count_minutes[i]-1;
+		        // console.log("In sec if : "+ String(count_minutes[i]))
+		        if (count_minutes[i] >= 0)
+		      		$("#timer-minutes-"+i).html(count_minutes[i]);
+		      }
+	      	// console.log("minutes : "+ String(count_minutes[i]))
+		      if (count_minutes[i] < 0 && count_minutes[i] >= -2)
+		      {
+		        count_minutes[i] = 59;
+		        if (count_hours[i] > 0)
+		          $("#timer-minutes-"+i).html(count_minutes[i]);
+		        count_hours[i] = count_hours[i]-1;
+		        if (count_hours[i] >= 0)
+		          $("#timer-hours-"+i).html(count_hours[i]);
+		      }
+		      if (count_hours[i] < 0 && count_hours[i] >= -2){
+		      	count_secs[i] = -2
+						count_minutes[i] = -2
+						count_hours[i] = -2
+						$.ajax({
+							url: '/get_new_location',
+							type: 'get'
+						})
+						.done(function(data) {
+							console.log(data)
+							var locations = data.current_location
+							console.log(locations)
+							initialize()
+						})
+						.fail(function() {
+							console.log("error");
+						})
+						.always(function() {
+							console.log("complete");
+						});
+						$.ajax({
+				      url: '/get_new_time/'+url_token[i],
+				      type: 'get',
+				      data: {old_refresh_count: refresh_count[i]},
+				      success: function (data) {
+				        // console.log(data)
+				        if(data.update == true){
+				        	// console.log("in first ajax if")
+				        	eta_calc_time[i] = data.eta_calc_time
+				        	current_eta[i] = data.current_eta
+				        	current_mile[i] = data.current_mile
+				        	// next_refresh_second[i] = data.next_refresh_second
+				        	refresh_count[i] = data.refresh_count
+				      		if(data.track_status == "terminated" || data.track_status == "reached"){
+				      			track_status[i] = data.track_status
+				      		}
+				      		else{
+				      			track_status[i] = "tracking"
+				      		}
+				        	set_initial_time(i)
+				        }
+				        else{
+									getNewTime(i);
+				        }
+			      	}
+			      });
+		      	// clearInterval(counter);
+		      	// refreshInternal();
+		      	return;
+		      }
+		      if(count_secs[i] != -2){
+		      	$("#timer-sec-"+i).html(count_secs[i]);
+		      }
+		    }
+	    }
+    }
+
+    function getNewTime(i){
+    	intervalIds[i] = setInterval(function(){
+	    	$.ajax({
+		      url: '/get_new_time/'+url_token[i],
+		      type: 'get',
+		      data: {old_refresh_count: refresh_count[i]},
+		      success: function (data) {
+		        // console.log(data)
+		        if(data.update == true){
+		        	eta_calc_time[i] = data.eta_calc_time
+		        	current_eta[i] = data.current_eta
+		        	current_mile[i] = data.current_mile
+		        	// next_refresh_second[i] = data.next_refresh_second
+				      refresh_count[i] = data.refresh_count
+				      if(data.track_status == "terminated" || data.track_status == "reached"){
+		      			track_status[i] = data.track_status
+		      		}
+		      		else{
+		      			track_status[i] = "tracking"
+		      		}
+		        	set_initial_time(i)
+		        	clearInterval(intervalIds[i])
+		        }
+	      	}
+	      });
+	    },5000)
+    }
+
+    function set_initial_time(i){
+    	// console.log("in set_initial_time")
+    	var currenttime = new Date();
+    	next_refresh_time[i] = new Date(next_refresh_time[i]);
+	    diff_in_sec[i] = Math.ceil((next_refresh_time[i] - currenttime)/1000)
+	    if (diff_in_sec[i] < 0){
+        	timer_seconds[i] = 10
+	    }else{
+	    		timer_seconds[i] = diff_in_sec[i];
+	    }
+
+	    if (timer_seconds[i] > current_eta[i]*60 || timer_seconds[i] < 0 ) {
+	      timer_seconds[i] = current_eta[i]*60
+	    }
+      count_secs[i]=timer_seconds[i]%60;
+			count_minutes[i]=((timer_seconds[i]-count_secs[i])%3600)/60;
+			count_hours[i]=Math.floor(timer_seconds[i]/3600);
+
+	  		// console.log("id: ", i)
+	  		if(i==10){
+	  			initializeTimer()
+	  		}
+    }
+</script>

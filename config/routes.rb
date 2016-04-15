@@ -28,10 +28,11 @@ Rails.application.routes.draw do
   get 'location_detail_popup' => 'location_details#location_detail_popup'
   get 'tracking_result/:url_token' => 'location_details#tracking_result',as: :tracking_result
   get 'refresh_tracking_result/:url_token' => 'location_details#refresh_tracking_result',as: :refresh_tracking_result
-  get 'set_next_refresh_time/:url_token' => 'location_details#set_next_refresh_time',as: :set_next_refresh_time
+  get 'set_next_refresh_second/:url_token' => 'location_details#set_next_refresh_second',as: :set_next_refresh_second
   get 'get_new_time/:url_token' => 'location_details#get_new_time',as: :get_new_time
   post 'location_detail' => 'location_details#location_detail', as: :'location_detail_resolve'
   get "mikescoffeeshop/admin/map" => "vendors#vendor_map", as: :vendor_map
+  get "get_new_location" => "vendors#get_new_location", as: :get_new_location
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

@@ -1,14 +1,18 @@
 <table class="table">
+	<th>EMAIL</th>
+	<th>FIRST_NAME</th>
+	<th>LAST_NAME</th>
+	<th>CM</th>
 	<th>ETA</th>
-	<th>CUSTOMER_FN</th>
-	<th>CUSTOMER_LN</th>
 	<th>TIMER</th>
 	<th>STATUS</th>
 	<% @ten_location.each_with_index do |location, index| %>
 		<tr>
-			<td><%= location.current_eta %></td>
+			<td><%= location.dispatcher.email %></td>
 			<td><%= location.dispatcher.first_name %></td>
 			<td><%= location.dispatcher.last_name %></td>
+			<td id="current-mile-<%= index %>"><%= number_with_precision(location.curr_mile/1610, precision: 2) %> miles</td>
+			<td id="current-eta-<%= index %>"><%= location.current_eta %></td>
 			<td id= "timer-<%= index %>">
 				<span id="timer-hours-<%= index %>"></span> hr
       	<span id="timer-minutes-<%= index %>"></span> min
@@ -34,17 +38,18 @@
 		var track_status = <%=raw @ten_location.map { |rec| rec.status } %>
 		var loop_count = <%= @ten_location.length %>
 		var current_eta = <%=raw @ten_location.map { |rec| rec.current_eta } %>
-		var next_refresh_time = <%=raw @ten_location.map { |rec| rec.next_refresh_time }  %>
+		var current_mile = <%=raw @ten_location.map { |rec| number_with_precision(rec.curr_mile/1610, precision: 2) } %>
+		// var next_refresh_second = <%=raw @ten_location.map { |rec| rec.next_refresh_second } %>
 		var refresh_count = <%=raw @ten_location.map { |rec| rec.dispatcher_refresh_count }  %>
 		var url_token = <%=raw @ten_location.map { |rec| rec.url_token }  %>
-		// console.log(url_token)
-	  var eta_calc_time = <%=raw @ten_location.map { |rec| rec.eta_calc_time.strftime('%Y/%m/%d %H:%M:%S %z') } %>
-	  var next_refresh_time = <%=raw @ten_location.map { |rec| rec.next_refresh_time } %>
-	  var current_eta = <%=raw @ten_location.map {|rec| rec.current_eta } %>
+	  var next_refresh_time = <%=raw @ten_location.map { |rec| rec.next_refresh_time.nil? ? "" : rec.next_refresh_time.strftime('%Y/%m/%d %H:%M:%S %z') } %>
 
-		for(i=0; i<=loop_count-1; i++){
-	    set_initial_time(i)
-	  }
+		initializeTimer()
+		function initializeTimer(){
+			for(i=0; i<=loop_count-1; i++){
+		    set_initial_time(i)
+		  }
+		}
     var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
     function timer()
@@ -87,10 +92,11 @@
 				      success: function (data) {
 				        console.log(data)
 				        if(data.update == true){
-				        	console.log("in first ajax if")
+				        	// console.log("in first ajax if")
 				        	eta_calc_time[i] = data.eta_calc_time
 				        	current_eta[i] = data.current_eta
-				        	next_refresh_time[i] = data.next_refresh_time
+				        	current_mile[i] = data.current_mile
+				        	// next_refresh_second[i] = data.next_refresh_second
 				        	refresh_count[i] = data.refresh_count
 				      		if(data.track_status == "terminated" || data.track_status == "reached"){
 				      			track_status[i] = data.track_status
@@ -98,11 +104,11 @@
 				      		else{
 				      			track_status[i] = "tracking"
 				      		}
-				      		console.log("eta_calc_time : ",eta_calc_time[i])
-				      		console.log("current_eta : ",current_eta[i])
-				      		console.log("next_refresh_time : ",next_refresh_time[i])
-				      		console.log("refresh_count : ",refresh_count[i])
-				      		console.log("track_status : ",track_status[i])
+				      		// console.log("eta_calc_time : ",eta_calc_time[i])
+				      		// console.log("current_eta : ",current_eta[i])
+				      		// console.log("next_refresh_second : ",next_refresh_second[i])
+				      		// console.log("refresh_count : ",refresh_count[i])
+				      		// console.log("track_status : ",track_status[i])
 				        	set_initial_time(i)
 				        }
 				        else{
@@ -132,7 +138,8 @@
 		        if(data.update == true){
 		        	eta_calc_time[i] = data.eta_calc_time
 		        	current_eta[i] = data.current_eta
-		        	next_refresh_time[i] = data.next_refresh_time
+		        	current_mile[i] = data.current_mile
+		        	// next_refresh_second[i] = data.next_refresh_second
 				      refresh_count[i] = data.refresh_count
 				      if(data.track_status == "terminated" || data.track_status == "reached"){
 		      			track_status[i] = data.track_status
@@ -149,24 +156,19 @@
     }
 
     function set_initial_time(i){
-    	console.log("in set_initial_time")
+    	// console.log("in set_initial_time")
     	var currenttime = new Date();
-    	eta_calc_time[i] = new Date(eta_calc_time[i]);
-	    diff_in_sec[i] = Math.ceil((currenttime - eta_calc_time[i])/1000)
-	    // console.log(next_refresh_time)
-	    // console.log(next_refresh_time[i])
-	    // diff_in_sec[i] = next_refresh_time[i]
+    	next_refresh_time[i] = new Date(next_refresh_time[i]);
+	    diff_in_sec[i] = Math.ceil((next_refresh_time[i] - currenttime)/1000)
+	    // console.log("diff in sec : "+String(diff_in_sec[i]))
+	    // console.log("next_refresh_time :", next_refresh_time[i])
+	    // console.log("Current_time :", currenttime)
 	    if (diff_in_sec[i] < 0){
-        	timer_seconds[i] = next_refresh_time[i]
+        	timer_seconds[i] = 10
+        	// timer_seconds[i] = next_refresh_second[i]
 	      	// timer_seconds[i] = current_eta[i]*60;
 	    }else{
-	    	if(current_eta[i].between(1,6)){
-        	timer_seconds[i] = next_refresh_time[i]
-	    	}
-	    	else{
-	    		timer_seconds[i] = Math.round(((current_eta[i]*60) - diff_in_sec[i])/2);
-		      // timer_seconds[i] = diff_in_sec[i];
-		    }
+	    		timer_seconds[i] = diff_in_sec[i];
 	    }
 	    // console.log(diff_in_sec)
 
@@ -185,14 +187,21 @@
 	  	// console.log(count_hours[i])
 	  	// status[i] = status[i].replace("&quot;", '')
 	  	if(track_status[i] == "terminated" || track_status[i] == "reached" || track_status[i] == "pending"){
-	  		console.log("in status if", track_status[i])
+	  		// console.log("in status if", track_status[i])
 	  		$("#timer-"+i).html("-")
 	  		$("#timer-status-"+i).html(track_status[i].capitalizeFirstLetter())
+	  		if(track_status[i] == "reached"){
+	  			$("#current-eta-"+i).html("Reached")
+	  			$("#current-mile-"+i).html("Reached")
+	  		}
 
 	  	}
 	  	else{
-	  		console.log("in else replace html")
+	  		// console.log("in else replace html")
 	  		console.log("id: ", i)
+	  		if(i==10){
+	  			initializeTimer()
+	  		}
 	  		// count_secs[9] = 10
 	  		// count_minutes[9] = 0
 	  		// count_secs[5] = 10
@@ -203,10 +212,12 @@
     		// console.log(count_minutes[5])
     		// console.log(count_hours[5])
     		$("#timer-"+i).html('<span id="timer-hours-'+i+'"></span> hr <span id="timer-minutes-'+i+'"></span> min <span id="timer-sec-'+i+'"></span> sec')
+    		$("#current-eta-"+i).html(current_eta[i])
+    		$("#current-mile-"+i).html(current_mile[i] + " miles")
 		  	$("#timer-sec-"+i).html(count_secs[i]);
 		    $("#timer-minutes-"+i).html(count_minutes[i]);
 		    $("#timer-hours-"+i).html(count_hours[i]);
 		  }
     }
-    window.open('');
+	   window.open("/mikescoffeeshop/admin/map");
 </script>

@@ -60,27 +60,19 @@
 
   <% if !@is_api_limit_exceed %>
     var currenttime = new Date();
-    var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
-    diff_in_sec = Math.ceil((currenttime - eta_calc_time)/1000)
+    // var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
+    var next_refresh_time = new Date('<%= @location_detail.next_refresh_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
+    diff_in_sec = Math.ceil((next_refresh_time - currenttime)/1000)
     // diff_in_sec = (currenttime - eta_calc_time)/1000
-    // console.log("diff in sec : "+String(diff_in_sec))
+    console.log("diff in sec : "+String(diff_in_sec))
+    console.log("next_refresh_time :", next_refresh_time)
+    console.log("Current_time :", currenttime)
     if (diff_in_sec < 0){
+      // var timer_seconds = "<%#= @location_detail.current_eta*60 %>";
+      refreshInternal()
       var timer_seconds = "<%= @location_detail.current_eta*60 %>";
     }else{
-      <% if (@location_detail.current_eta).between?(2,5) %>
-        timer_seconds = parseInt("<%= @location_detail.next_refresh_time %>")
-      <% else %>
-        timer_seconds = Math.round((parseInt("<%= @location_detail.current_eta*60 %>") - diff_in_sec)/2);
-        // timer_seconds = ("<%#= @location_detail.current_eta*60 %>" - diff_in_sec);
-        $.ajax({
-          url: '/set_next_refresh_time/'+'<%= @location_detail.url_token %>',
-          type: 'get',
-          data: {sec: timer_seconds},
-          success: function (data) {
-            data
-          }
-        });
-      <% end %>
+        timer_seconds = diff_in_sec
     }
 
     if (timer_seconds > parseInt("<%= @location_detail.current_eta*60 %>") || timer_seconds < 0 ) {
@@ -128,6 +120,7 @@
       $("#next-eta-box").html("Refreshing...");
       setTimeout(function(){
         $.ajax({
+          async: false,
           url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
           type: 'get',
           data: {curr_lat: curr_lat,curr_long: curr_long},
