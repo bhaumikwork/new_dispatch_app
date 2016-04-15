@@ -35,7 +35,6 @@ class LocationDetailsController < ApplicationController
         eta:@eta,
         curr_lat:params[:curr_lat],
         curr_long:params[:curr_long],
-        eta_calc_time:Time.zone.now,
         current_eta:@eta,
         curr_mile:@curr_mile
       )
@@ -44,6 +43,8 @@ class LocationDetailsController < ApplicationController
 
   # generates image and dispalay it.
   def tracking_result
+    @location_detail.update_attributes(eta_calc_time: Time.zone.now) if @location_detail.eta_calc_time.nil?
+
     if @link_generator
       @time_variation = 0
       # @is_api_limit_exceed = true if @location_detail.dispatcher_refresh_count > 3
@@ -53,6 +54,7 @@ class LocationDetailsController < ApplicationController
     end
     set_source_and_dest_points(@location_detail.source_lat,@location_detail.source_long,@location_detail.dest_lat,@location_detail.dest_long)
     @eta = @location_detail.eta
+    # @eta = 7 # testing value
     @eta_min = (@eta)%60
     @eta_hr = (@eta)/60
     @curr_mile = @location_detail.curr_mile
@@ -64,7 +66,7 @@ class LocationDetailsController < ApplicationController
     logger.info"======@time_variation===========#{@time_variation}=============="
   end
 
-  # At timer ends this will refresh tracking results 
+  # At timer ends this will refresh tracking results
   def refresh_tracking_result
     if @link_generator
       @time_variation = 0
@@ -78,7 +80,7 @@ class LocationDetailsController < ApplicationController
         @location_detail.update(curr_lat:params[:curr_lat],curr_long:params[:curr_long])
       end
       set_source_and_dest_points(@location_detail.curr_lat,@location_detail.curr_long,@location_detail.dest_lat,@location_detail.dest_long)
-      
+
       geteta
       if @link_generator && !@error
         @location_detail.update(current_eta: @eta, eta_calc_time:Time.zone.now, curr_mile: @curr_mile)
@@ -95,9 +97,9 @@ class LocationDetailsController < ApplicationController
   def get_new_time
     check_next_refresh_time()
     if @location_detail.dispatcher_refresh_count > params[:old_refresh_count].to_i || @location_detail.terminated?
-      render json: {update: true, record: @location_detail.id,eta_calc_time: @location_detail.eta_calc_time,current_eta: @location_detail.current_eta, refresh_count: @location_detail.dispatcher_refresh_count, track_status: @location_detail.status, current_mile: number_with_precision(@location_detail.curr_mile/1610, precision: 2)}
+      render json: {update: true, record: @location_detail.id,eta_calc_time: @location_detail.eta_calc_time,current_eta: @location_detail.current_eta, refresh_count: @location_detail.dispatcher_refresh_count, next_refresh_time: @location_detail.next_refresh_time, track_status: @location_detail.status, current_mile: number_with_precision(@location_detail.curr_mile/1610, precision: 2), index: params[:index]}
     else
-      render json: {update: false, record: @location_detail.id}
+      render json: {update: false, record: @location_detail.id, index: params[:index]}
     end
   end
 
@@ -120,16 +122,21 @@ class LocationDetailsController < ApplicationController
       @response = response.read_body
       @response = Hash.from_xml(@response)
       @error = false
-      if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
-        @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
-        # @eta = 300/60.0 # testing value
-        # @eta = @eta - 2
-        @eta = @eta.round
-        @eta_min = (@eta)%60
-        @eta_hr = (@eta)/60
-        @curr_mile = @response["DistanceMatrixResponse"]["row"]["element"]["distance"]["value"].to_f
+      unless @response["DistanceMatrixResponse"]["status"] == "OVER_QUERY_LIMIT"
+        if @response["DistanceMatrixResponse"]["row"]["element"]["status"] == "OK"
+          @eta = @response["DistanceMatrixResponse"]["row"]["element"]["duration"]["value"].to_i/60.0
+          # @eta = 300/60.0 # testing value
+          # @eta = 7
+          @eta = @eta.round
+          @eta_min = (@eta)%60
+          @eta_hr = (@eta)/60
+          @curr_mile = @response["DistanceMatrixResponse"]["row"]["element"]["distance"]["value"].to_f
+        else
+          @error = true
+        end
       else
         @error = true
+        @error_info = { error: true, status: @response["DistanceMatrixResponse"]["status"], err_msg: @response["DistanceMatrixResponse"]["error_message"].split('.')[0] }
       end
       logger.info"<=====response===========#{@response.inspect}===============>"
     end

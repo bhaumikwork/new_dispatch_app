@@ -58,7 +58,7 @@
     return 'The following action will cause you to lose all displayed data...are you sure you wish to continue?';
   }
 
-  <% if !@is_api_limit_exceed %>
+  //<%# if !@is_api_limit_exceed %>
     var currenttime = new Date();
     // var eta_calc_time = new Date('<%= @location_detail.eta_calc_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
     var next_refresh_time = new Date('<%= @location_detail.next_refresh_time.strftime("%Y/%m/%d %H:%M:%S %z") %>');
@@ -85,6 +85,8 @@
     var count_secs=timer_seconds%60;
     var count_minutes=((timer_seconds-count_secs)%3600)/60;
     var count_hours=Math.floor(timer_seconds/3600);
+    // count_secs = 59
+    // count_minutes = 0
     $("#timer-minutes").html(count_minutes);
     $("#timer-hours").html(count_hours);
     $("#timer-sec").html(count_secs);
@@ -112,7 +114,7 @@
       if (count_hours < 0){
       	clearInterval(counter);
       	refreshInternal();
-      	return;
+      	// return;
       }
       $("#timer-sec").html(count_secs);
     }
@@ -120,7 +122,6 @@
       $("#next-eta-box").html("Refreshing...");
       setTimeout(function(){
         $.ajax({
-          async: false,
           url: '/refresh_tracking_result/'+'<%= @location_detail.url_token %>',
           type: 'get',
           data: {curr_lat: curr_lat,curr_long: curr_long},
@@ -130,5 +131,5 @@
         });
       },<%= @time_variation %>);
     }
-  <% end %>
+  //<%# end %>
 </script>

@@ -24,4 +24,8 @@ class Dispatcher < ActiveRecord::Base
     self.errors[:password_confirmation] << "does not match password" if password != password_confirmation
     password == password_confirmation && !password.blank?
   end
+
+  def terminate_running_tracker
+    self.location_details.where(status: 1).update_all(status: 3)
+  end
 end

@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     #   root :to => "home#home", as: :unauthenticated_vendor_root
     # end
   end
-  devise_for :dispatchers, :controllers => {:confirmations => 'dispatchers/confirmations'}
+  devise_for :dispatchers, :controllers => {:confirmations => 'dispatchers/confirmations', :sessions => 'dispatchers/sessions'}
   devise_scope :dispatcher do
     patch "/confirm" => "dispatchers/confirmations#confirm"
     authenticated :dispatcher do
