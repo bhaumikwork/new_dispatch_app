@@ -1,6 +1,10 @@
 <div class="row">
   <% if @error %>
-    <div class="error">Please allow to share your location or enter valid destination address.</div>
+    <% if @error_info.nil? %>
+      <div class="error">Please allow to share your location or enter valid destination address.</div>
+    <% else %>
+      <div class="error"><%= @error_info[:err_msg] %>.</div>
+    <% end %>
     <%= link_to 'Click here to return to the Dashboard',authenticated_root_path,id: 'random_url' %>
   <% else %>
     <div>
