@@ -58,7 +58,7 @@ ActiveRecord::Schema.define(version: 20160414061936) do
     t.integer  "dispatcher_refresh_count", default: 0
     t.boolean  "is_terminate",             default: false
     t.string   "image_url"
-    t.integer  "next_refresh_second",      default: 0 # Not used this column in code
+    t.integer  "next_refresh_second",      default: 0
     t.integer  "status",                   default: 0
     t.float    "curr_mile",                default: 0.0
     t.datetime "next_refresh_time"

@@ -82,8 +82,8 @@ Rails.application.configure do
     :port => 587,
     :domain => "Dispatch.com",
     :authentication => :plain,
-    :user_name => "horizonpawanimmigrationeducation",
-    :password => "horizonpawanimmigration123",
+    :user_name => "retinafoundation",
+    :password => "retinafoundation1",
     :enable_starttls_auto => true
   }
 
