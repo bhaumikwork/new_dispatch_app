@@ -24,17 +24,18 @@
     var marker, i
     var bounds = new google.maps.LatLngBounds();
     for (i = 0; i < locations.length; i++){
-      var loan = locations[i][0]
+      var name = locations[i][0]
       var lat = locations[i][1]
       var long = locations[i][2]
-      var add =  locations[i][3]
+      var eta =  locations[i][3]
+      var address = locations[i][4]
 
       latlngset = new google.maps.LatLng(lat, long);
 
-      var marker = new google.maps.Marker({ map: map, title: loan , position: latlngset  });
+      var marker = new google.maps.Marker({ map: map, title: name , position: latlngset  });
       bounds.extend(latlngset);
       map.setCenter(marker.getPosition())
-      var content = "Loan Number: " + loan +  '</h3>' + "Address: " + add
+      var content = "Name " + name +  '<br/>' + "ETA: " + eta +'</br>'+ 'Destination Address: ' + address
       var infowindow = new google.maps.InfoWindow()
 
       google.maps.event.addListener(marker,'click', (function(marker,content,infowindow){

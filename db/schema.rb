@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160414061936) do
+ActiveRecord::Schema.define(version: 20160419133048) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,6 +63,7 @@ ActiveRecord::Schema.define(version: 20160414061936) do
     t.float    "curr_mile",                default: 0.0
     t.datetime "next_refresh_time"
     t.datetime "tracking_start_time"
+    t.text     "destination_address"
   end
 
   add_index "location_details", ["dispatcher_id"], name: "index_location_details_on_dispatcher_id", using: :btree

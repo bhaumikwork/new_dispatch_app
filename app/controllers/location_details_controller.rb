@@ -21,7 +21,7 @@ class LocationDetailsController < ApplicationController
     query = params[:address]
     Geocoder::Configuration.timeout = 10000
     @dest_location = Geocoder.search(query).first
-    logger.info"<====================#{@dest_location.inspect}=========================>"
+    logger.info"<====================#{@dest_location.inspect}=============#{@dest_location.formatted_address}============>"
     logger.info"<=========latitude===========#{@dest_location.latitude}=========================>"
     logger.info"<=========longitude===========#{@dest_location.longitude}=========================>"
     set_source_and_dest_points(params[:curr_lat],params[:curr_long],@dest_location.latitude,@dest_location.longitude)
@@ -36,7 +36,8 @@ class LocationDetailsController < ApplicationController
         curr_lat:params[:curr_lat],
         curr_long:params[:curr_long],
         current_eta:@eta,
-        curr_mile:@curr_mile
+        curr_mile:@curr_mile,
+        destination_address: @dest_location.formatted_address
       )
     end
   end

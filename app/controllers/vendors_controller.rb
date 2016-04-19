@@ -28,6 +28,6 @@ class VendorsController < ApplicationController
 
   	def get_current_location
   		@ten_location = LocationDetail.order('id').last(10).select {|r| r.tracking? }
-  		@ten_location_array = @ten_location.map { |r| [r.dispatcher.first_name, r.curr_lat, r.curr_long] }
+  		@ten_location_array = @ten_location.map { |r| [r.dispatcher.first_name+' '+r.dispatcher.first_name , r.curr_lat, r.curr_long, r.current_eta, r.destination_address] }
   	end
 end
